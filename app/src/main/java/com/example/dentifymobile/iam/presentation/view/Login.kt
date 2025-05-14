@@ -1,5 +1,6 @@
 package com.example.dentifymobile.iam.presentation.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.dentifymobile.iam.data.di.AuthModule
@@ -84,6 +87,17 @@ fun Login(navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "¿No tienes cuenta? Regístrate aquí",
+            fontWeight = FontWeight.Bold,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("register")
+                }
+        )
 
     }
 }

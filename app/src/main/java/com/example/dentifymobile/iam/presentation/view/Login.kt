@@ -10,16 +10,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.dentifymobile.iam.data.di.AuthModule
+import com.example.dentifymobile.iam.data.storage.TokenStorage
 import com.example.dentifymobile.iam.presentation.viewmodel.LoginViewModel
 
 @Composable
@@ -31,6 +34,16 @@ fun Login(navController: NavController) {
 
     val loginState by remember { derivedStateOf { viewModel.loginState } }
     val errorMessage by remember { derivedStateOf { viewModel.errorMessage } }
+    val context = LocalContext.current
+
+    LaunchedEffect(loginState) {
+        loginState?.let {
+            TokenStorage.saveTokens(context, it.accessToken, it.refreshToken)
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -72,11 +85,5 @@ fun Login(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        loginState?.let {
-            Text(
-                text = "Welcome!",
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
     }
 }

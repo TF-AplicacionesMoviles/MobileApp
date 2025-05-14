@@ -4,6 +4,7 @@ import com.example.dentifymobile.iam.data.remote.services.AuthApiService
 import com.example.dentifymobile.iam.data.repository.AuthRepositoryImpl
 import com.example.dentifymobile.iam.domain.repository.AuthRepository
 import com.example.dentifymobile.iam.domain.usecases.LoginUseCase
+import com.example.dentifymobile.iam.domain.usecases.RegisterUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -28,5 +29,9 @@ object AuthModule {
     // Proveer instancia de LoginUseCase
     fun provideLoginUseCase(): LoginUseCase {
         return LoginUseCase(provideAuthRepository())
+    }
+
+    fun provideRegisterUseCase(): RegisterUseCase {
+        return RegisterUseCase(provideAuthRepository())
     }
 }

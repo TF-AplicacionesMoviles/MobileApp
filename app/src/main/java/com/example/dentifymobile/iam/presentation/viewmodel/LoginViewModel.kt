@@ -22,7 +22,10 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 val response = loginUseCase(username, password)
+                println("ACCESS TOKEN: ${response.accessToken}")
+                println("REFRESH TOKEN: ${response.refreshToken}")
                 loginState = response
+                errorMessage = null
             } catch (e: Exception) {
                 errorMessage = e.message
             }

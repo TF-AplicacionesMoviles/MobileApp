@@ -16,3 +16,21 @@ Project Structure:
 - androidx.compose.runtime(mutablestateof)
 - androidx.navigation.compose (rooteo)
     
+
+PORTS (dev: interferencias en el backend, poner en puerto 8081):
+
+res/xml/network_security_config.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
+</network-security-config>
+
+EN ANDROIDMANIFEST.XML
+<application
+android:name=".MyApp"
+android:networkSecurityConfig="@xml/network_security_config"
+...>
+

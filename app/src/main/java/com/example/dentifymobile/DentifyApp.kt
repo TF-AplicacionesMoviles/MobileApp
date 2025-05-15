@@ -7,6 +7,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dentifymobile.iam.presentation.view.Home
 import com.example.dentifymobile.iam.presentation.view.Login
 import com.example.dentifymobile.iam.presentation.view.Register
+import com.example.dentifymobile.patientattention.patient.presentation.view.PatientFormView
+import com.example.dentifymobile.patientattention.patient.presentation.view.PatientsView
 
 @Composable
 fun DentifyApp() {
@@ -21,6 +23,12 @@ fun DentifyApp() {
         }
         composable("register") {
             Register(navController)
+        }
+        composable("patients") {
+            PatientsView(navController)
+        }
+        composable("patient_form") {
+            PatientFormView(navController)
         }
     }
 }

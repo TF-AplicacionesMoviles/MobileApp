@@ -25,5 +25,8 @@ fun Home(navController: NavController) {
         Text("¡Bienvenido a Dentify!")
         Text(text = "Access Token: $accessToken")
         // más contenido de Home
+
     }
+
+
 }

@@ -42,7 +42,7 @@ fun Login(navController: NavController) {
     LaunchedEffect(loginState) {
         loginState?.let {
             TokenStorage.saveTokens(context, it.accessToken, it.refreshToken)
-            navController.navigate("home") {
+            navController.navigate("patients") {
                 popUpTo("login") { inclusive = true }
             }
         }
@@ -80,7 +80,7 @@ fun Login(navController: NavController) {
         }
 
         Button(
-            onClick = { viewModel.login(username, password) },
+            onClick = {viewModel.login(username, password)},
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Login")

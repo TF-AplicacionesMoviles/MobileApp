@@ -1,0 +1,217 @@
+package com.example.dentifymobile.patientattention.patient.presentation.view
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.example.dentifymobile.patientattention.patient.data.di.DataModule
+import com.example.dentifymobile.patientattention.patient.domain.model.Patient
+import com.example.dentifymobile.patientattention.patient.presentation.viewmodel.PatientsViewModel
+
+
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.navigation.NavController
+
+
+@Composable
+fun PatientsView(navController: NavController) {
+    val context = LocalContext.current
+
+    val viewModel = remember {
+        PatientsViewModel(DataModule.getAllPatientsUseCase(context),
+        DataModule.deletePatientUseCase(context)) }
+    val patients = viewModel.patients.collectAsState()
+
+    val searchedPatient = remember { mutableStateOf("") }
+
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllPatients()
+    }
+
+    Scaffold(
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 40.dp, top = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = {
+                        navController.navigate("patient_form")
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth(0.5f)
+                ) {
+                    Text(
+                        text = "New Patient",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        },
+        topBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 48.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
+            ) {
+                OutlinedTextField(
+                    value = searchedPatient.value,
+                    onValueChange = { searchedPatient.value = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Search...") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search"
+                        )
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            // filtro
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.FilterList,
+                                contentDescription = "Filtrar"
+                            )
+                        }
+                    },
+                    shape = RoundedCornerShape(16.dp)
+                )
+            }
+        }
+    ) { padding ->
+        Column(modifier = Modifier
+            .padding(padding)
+            .padding(16.dp)) {
+
+            LazyColumn {
+                items(patients.value) { patient ->
+                    PatientItemView(
+                        patient = patient,
+                        onDelete = { id -> viewModel.deletePatient(id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun PatientItemView(
+    patient: Patient,
+    onDelete: (Long) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFD1F2EB)),
+        shape = CardDefaults.shape
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF2C3E50))
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Patient",
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${patient.firstName} ${patient.lastName}",
+                    color = Color.White
+                )
+            }
+
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = "DNI: ${patient.dni}")
+                Text(text = "First name: ${patient.firstName}")
+                Text(text = "Last name: ${patient.lastName}")
+                Text(text = "Email: ${patient.email}")
+                Text(text = "Home address: ${patient.homeAddress}")
+                Text(text = "Birthday: ${patient.birthday}")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text(
+                        text = "Vew history",
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable {
+
+                        }
+                    )
+                    Text(
+                        text = "Edit",
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable {
+
+                        }
+                    )
+                    Text(
+                        text = "Delete",
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable {
+                            onDelete(patient.id)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}

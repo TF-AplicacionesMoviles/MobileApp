@@ -8,13 +8,14 @@ import com.example.dentifymobile.patientattention.patient.domain.repository.Pati
 import com.example.dentifymobile.patientattention.patient.domain.usecases.AddPatientUseCase
 import com.example.dentifymobile.patientattention.patient.domain.usecases.DeletePatientUseCase
 import com.example.dentifymobile.patientattention.patient.domain.usecases.GetAllPatientsUseCase
+import com.example.dentifymobile.patientattention.patient.domain.usecases.UpdatePatientUseCase
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object DataModule {
 
-    private const val BASE_URL = "http://10.0.2.2:8081/api/"
+    private const val BASE_URL = "http://10.0.2.2:8080/api/"
 
 
     private fun getRetrofit(context: Context): Retrofit {
@@ -55,5 +56,9 @@ object DataModule {
 
     fun deletePatientUseCase(context: Context): DeletePatientUseCase {
         return DeletePatientUseCase(getPatientRepository(context))
+    }
+
+    fun updatePatientUseCase(context: Context): UpdatePatientUseCase {
+        return UpdatePatientUseCase(getPatientRepository(context))
     }
 }

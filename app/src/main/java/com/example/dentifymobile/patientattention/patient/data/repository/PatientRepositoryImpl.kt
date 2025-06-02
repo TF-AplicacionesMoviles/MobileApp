@@ -56,4 +56,20 @@ class PatientRepositoryImpl(
             Log.e(TAG, "Error deleting patient: ${response.code()} - ${response.message()}")
         }
     }
+
+    override suspend fun updatePatient(id: Long, patient: Patient) = withContext(Dispatchers.IO) {
+        val response = patientService.updatePatient(id,
+            PatientRequest(
+                dni = patient.dni,
+                firstName = patient.firstName,
+                lastName = patient.lastName,
+                email = patient.email,
+                homeAddress = patient.homeAddress,
+                birthday = patient.birthday
+            ))
+
+        if(!response.isSuccessful) {
+            Log.e(TAG, "Error updating patient: ${response.code()} - ${response.message()}")
+        }
+    }
 }

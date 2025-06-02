@@ -6,4 +6,5 @@ interface PatientRepository {
     suspend fun getAllPatients(): List<Patient>
     suspend fun addPatient(patient: Patient)
     suspend fun deletePatient(id: Long)
+    suspend fun updatePatient(id: Long, patient: Patient)
 }

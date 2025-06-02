@@ -33,18 +33,25 @@ import com.example.dentifymobile.patientattention.patient.presentation.viewmodel
 
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 
 
@@ -59,6 +66,7 @@ fun PatientsView(navController: NavController) {
 
     val searchedPatient = remember { mutableStateOf("") }
 
+    val expanded = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.getAllPatients()
@@ -69,7 +77,7 @@ fun PatientsView(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 40.dp, top = 8.dp),
+                    .padding(bottom = 30.dp, top = 3.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Button(
@@ -81,9 +89,10 @@ fun PatientsView(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(0.5f)
                 ) {
                     Text(
-                        text = "New Patient",
+                        text = "New Patient (+)",
                         color = Color.White,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
                     )
                 }
             }
@@ -92,7 +101,7 @@ fun PatientsView(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 48.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
+                    .padding(top = 48.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
             ) {
                 OutlinedTextField(
                     value = searchedPatient.value,
@@ -100,22 +109,50 @@ fun PatientsView(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Search...") },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search"
-                        )
-                    },
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            // filtro
-                        }) {
+                        IconButton(
+                            onClick = {
+
+                            }
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.FilterList,
-                                contentDescription = "Filtrar"
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search"
                             )
                         }
                     },
-                    shape = RoundedCornerShape(16.dp)
+                    trailingIcon = {
+                        Box {
+                            IconButton(onClick = { expanded.value = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.Tune,
+                                    contentDescription = "Filter"
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = expanded.value,
+                                onDismissRequest = { expanded.value = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(
+                                        text = "Filter by DNI",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Center) },
+                                    onClick = {
+                                        expanded.value = false
+                                        //lógica de filtro por DNI
+                                        println("Filter by DNI")
+                                    }
+                                )
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFFD1F2EB),
+                        unfocusedContainerColor = Color(0xFFD1F2EB),
+                        focusedBorderColor = Color(0xFFD1F2EB)
+                    )
                 )
             }
         }
@@ -142,6 +179,9 @@ fun PatientItemView(
     patient: Patient,
     onDelete: (Long) -> Unit
 ) {
+
+    val showDialog = remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -170,12 +210,11 @@ fun PatientItemView(
             }
 
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "DNI: ${patient.dni}")
-                Text(text = "First name: ${patient.firstName}")
-                Text(text = "Last name: ${patient.lastName}")
+                Text(text = "ID: ${patient.dni}")
                 Text(text = "Email: ${patient.email}")
-                Text(text = "Home address: ${patient.homeAddress}")
+                Text(text = "Age: ${patient.age}")
                 Text(text = "Birthday: ${patient.birthday}")
+                Text(text = "Home address: ${patient.homeAddress}")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -184,7 +223,7 @@ fun PatientItemView(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(
-                        text = "Vew history",
+                        text = "View history",
                         color = Color.Black,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
@@ -207,9 +246,63 @@ fun PatientItemView(
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable {
-                            onDelete(patient.id)
+                            showDialog.value = true
                         }
                     )
+                }
+            }
+        }
+    }
+
+
+
+    if (showDialog.value) {
+        Dialog(onDismissRequest = { showDialog.value = false }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 60.dp, horizontal = 20.dp)
+                    .background(Color(0xFF26323D), shape = RoundedCornerShape(16.dp))
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Are you sure you want to delete this patient?",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "This action cannot be undone",
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            onClick = { showDialog.value = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+                        ) {
+                            Text("Cancel", color = Color.Black)
+                        }
+                        Button(
+                            onClick = {
+                                showDialog.value = false
+                                onDelete(patient.id)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD9D9D9))
+                        ) {
+                            Text("Accept", color = Color.Black)
+                        }
+                    }
                 }
             }
         }

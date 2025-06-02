@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object AuthModule {
 
-    private const val BASE_URL = "http://10.0.2.2:8081/api/"
+    private const val BASE_URL = "http://10.0.2.2:8080/api/"
 
     // Proveer instancia de AuthApiService
     fun provideAuthApiService(): AuthApiService {

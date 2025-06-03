@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,9 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.dentifymobile.patientattention.patient.data.di.DataModule
 import com.example.dentifymobile.patientattention.patient.domain.model.Patient
 import com.example.dentifymobile.patientattention.patient.presentation.viewmodel.PatientsViewModel
 
@@ -51,16 +49,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
 
 
 @Composable
-fun PatientsView(navController: NavController) {
-    val context = LocalContext.current
+fun PatientsView(viewModel: PatientsViewModel, toPatientForm: () -> Unit) {
 
-    val viewModel = remember {
-        PatientsViewModel(DataModule.getAllPatientsUseCase(context),
-        DataModule.deletePatientUseCase(context)) }
     val patients = viewModel.patients.collectAsState()
 
     val searchedPatient = remember { mutableStateOf("") }
@@ -71,96 +64,71 @@ fun PatientsView(navController: NavController) {
         viewModel.getAllPatients()
     }
 
-    Scaffold(
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 30.dp, top = 3.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(
-                    onClick = {
-                        navController.navigate("patient_form")
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth(0.5f)
-                ) {
-                    Text(
-                        text = "New Patient (+)",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
-            }
-        },
-        topBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 48.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
-            ) {
-                OutlinedTextField(
-                    value = searchedPatient.value,
-                    onValueChange = { searchedPatient.value = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Search...") },
-                    leadingIcon = {
-                        IconButton(
-                            onClick = {
 
-                            }
-                        ) {
+
+    Box(modifier = Modifier.fillMaxSize().padding(top = 20.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 72.dp, start = 16.dp, end = 16.dp)
+        ) {
+            OutlinedTextField(
+                value = searchedPatient.value,
+                onValueChange = { searchedPatient.value = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Search...") },
+                leadingIcon = {
+                    IconButton(
+                        onClick = {
+
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search"
+                        )
+                    }
+                },
+                trailingIcon = {
+                    Box {
+                        IconButton(onClick = { expanded.value = true }) {
                             Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
+                                imageVector = Icons.Default.Tune,
+                                contentDescription = "Filter"
                             )
                         }
-                    },
-                    trailingIcon = {
-                        Box {
-                            IconButton(onClick = { expanded.value = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.Tune,
-                                    contentDescription = "Filter"
-                                )
-                            }
 
-                            DropdownMenu(
-                                expanded = expanded.value,
-                                onDismissRequest = { expanded.value = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text(
-                                        text = "Filter by DNI",
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Center) },
-                                    onClick = {
-                                        expanded.value = false
-                                        //lógica de filtro por DNI
-                                        println("Filter by DNI")
-                                    }
-                                )
-                            }
+                        DropdownMenu(
+                            expanded = expanded.value,
+                            onDismissRequest = { expanded.value = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(
+                                    text = "Filter by DNI",
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center) },
+                                onClick = {
+                                    expanded.value = false
+                                    //lógica de filtro por DNI
+                                    println("Filter by DNI")
+                                }
+                            )
                         }
-                    },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFFD1F2EB),
-                        unfocusedContainerColor = Color(0xFFD1F2EB),
-                        focusedBorderColor = Color(0xFFD1F2EB)
-                    )
+                    }
+                },
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFFD1F2EB),
+                    unfocusedContainerColor = Color(0xFFD1F2EB),
+                    focusedBorderColor = Color(0xFFD1F2EB)
                 )
-            }
-        }
-    ) { padding ->
-        Column(modifier = Modifier
-            .padding(padding)
-            .padding(16.dp)) {
+            )
 
-            LazyColumn {
+
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            LazyColumn(modifier = Modifier.padding(top = 2.dp)) {
                 items(patients.value) { patient ->
                     PatientItemView(
                         patient = patient,
@@ -168,6 +136,22 @@ fun PatientsView(navController: NavController) {
                     )
                 }
             }
+        }
+
+
+        Button(
+            onClick = { toPatientForm() },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.align(Alignment.BottomCenter)
+            .padding(8.dp),
+        ) {
+            Text(
+                text = "New Patient (+)",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
         }
     }
 }

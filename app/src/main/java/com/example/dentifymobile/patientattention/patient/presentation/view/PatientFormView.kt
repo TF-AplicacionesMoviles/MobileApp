@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -21,7 +22,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -32,20 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.dentifymobile.patientattention.patient.data.di.DataModule
 import com.example.dentifymobile.patientattention.patient.domain.model.Patient
 import com.example.dentifymobile.patientattention.patient.presentation.viewmodel.PatientFormViewModel
 import java.util.Calendar
 
 @Composable
-fun PatientFormView(navController: NavController) {
-
-    val context = LocalContext.current
-    val viewModel = remember { PatientFormViewModel(DataModule.addPatientUseCase(context),
-        DataModule.updatePatientUseCase(context)) }
+fun PatientFormView(viewModel: PatientFormViewModel, toPatients: () -> Unit, toBack: () -> Unit) {
 
     val dni = remember { mutableStateOf("") }
     val firstName = remember { mutableStateOf("") }
@@ -55,51 +50,15 @@ fun PatientFormView(navController: NavController) {
     val birthday = remember { mutableStateOf("") }
 
 
-    Scaffold(
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 40.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(
-                    onClick = {
-                        val patient = Patient(
-                            id = -1L,
-                            dni = dni.value,
-                            firstName = firstName.value,
-                            lastName = lastName.value,
-                            email = email.value,
-                            homeAddress = homeAddress.value,
-                            birthday = birthday.value,
-                            age = -1
-                        )
-                        viewModel.addPatient(patient)
-
-                        navController.navigate("patients")
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth(0.5f)
-                ) {
-                    Text(
-                        text = "Save",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
-            }
-        }) { padding ->
+    Box(modifier = Modifier.fillMaxSize().padding(top = 20.dp)) {
         LazyColumn(
             modifier = Modifier
-                .padding(top = 30.dp, start = 16.dp, end = 16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 72.dp)
         ) {
             item {
                 Card(
                     modifier = Modifier
-                        .padding(top = 30.dp, start = 8.dp, end = 8.dp)
+                        .padding(start = 8.dp, end = 8.dp)
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFD1F2EB))
@@ -135,14 +94,47 @@ fun PatientFormView(navController: NavController) {
                             DatePickerTextField(label = "Birthday", selectedDate = birthday.value) { birthday.value = it }
                         }
                     }
+
+                    Text(
+                        text = "Go back to patients general view",
+                        color = Color(0xFF2C3E50),
+                        modifier = Modifier
+                            .clickable { toBack() }
+                            .padding(start = 16.dp, bottom = 16.dp),
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline
+                    )
                 }
             }
         }
+
+        Button(
+            onClick = {
+                val patient = Patient(
+                    id = -1L,
+                    dni = dni.value,
+                    firstName = firstName.value,
+                    lastName = lastName.value,
+                    email = email.value,
+                    homeAddress = homeAddress.value,
+                    birthday = birthday.value,
+                    age = -1
+                )
+                viewModel.addPatient(patient)
+                toPatients() },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.align(Alignment.BottomCenter)
+                .padding(8.dp),) {
+            Text(
+                text = "Save",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+        }
     }
 }
-
-
-
 
 
 

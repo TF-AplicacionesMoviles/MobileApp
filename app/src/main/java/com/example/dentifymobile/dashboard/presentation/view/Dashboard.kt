@@ -1,4 +1,4 @@
-package com.example.dentifymobile.app.presentation.view
+package com.example.dentifymobile.dashboard.presentation.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,13 +11,13 @@ import androidx.compose.ui.unit.dp
 import com.example.dentifymobile.iam.data.storage.TokenStorage
 
 @Composable
-fun Dashboard(modifier: Modifier) {
+fun Dashboard() {
 
     val context = LocalContext.current
     val accessToken = TokenStorage.getAccessToken(context)
 
     Column(
-        modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {

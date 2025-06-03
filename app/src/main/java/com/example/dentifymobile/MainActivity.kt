@@ -4,8 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.navigation.compose.rememberNavController
-import com.example.dentifymobile.iam.presentation.navigation.MainScreen
+import com.example.dentifymobile.navigation.DentifyApp
 import com.example.dentifymobile.ui.theme.DentifyMobileTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,18 +13,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DentifyMobileTheme {
-//                DentifyApp()
-//                MyApp()
-//                val navController = rememberNavController()
-                MainScreen()
+                DentifyApp()
             }
         }
     }
 }
 
-
-//@Composable
-//fun MyApp() {
-//    val navController = rememberNavController() // Aquí se crea
-//    RootNavGraph(navController = navController) // Aquí se pasa
-//}

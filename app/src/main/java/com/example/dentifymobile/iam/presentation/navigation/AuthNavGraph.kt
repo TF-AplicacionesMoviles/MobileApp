@@ -4,14 +4,14 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.dentifymobile.iam.presentation.di.PresentationModule
 import com.example.dentifymobile.iam.presentation.view.Login
 import com.example.dentifymobile.iam.presentation.view.Register
-import com.example.dentifymobile.iam.presentation.viewmodel.LoginViewModel
-import com.example.dentifymobile.iam.presentation.viewmodel.RegisterViewModel
 
-fun NavGraphBuilder.authNavGraph(navController: NavController,
-                                 loginViewModel: LoginViewModel,
-                                 registerViewModel: RegisterViewModel) {
+fun NavGraphBuilder.authNavGraph(navController: NavController) {
+
+    val loginViewModel = PresentationModule.getLoginViewModel()
+    val registerViewModel = PresentationModule.getRegisterViewModel()
 
     navigation(startDestination = "login", route = "authentication") {
 

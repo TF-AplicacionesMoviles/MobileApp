@@ -1,5 +1,6 @@
-package com.example.dentifymobile.app.presentation.navigation
+package com.example.dentifymobile.navigation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +12,6 @@ import androidx.compose.material.icons.filled.AirlineSeatFlatAngled
 import androidx.compose.material.icons.filled.ContentPasteSearch
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
@@ -33,15 +33,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.dentifymobile.R
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.layout.Box
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun DrawerWrapper(navController: NavController, content: @Composable (Modifier) -> Unit) {
+fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -73,14 +76,14 @@ fun DrawerWrapper(navController: NavController, content: @Composable (Modifier) 
                                 Icon(Icons.Default.Menu, contentDescription = "Menú")
                             }
 
-                            Icon(
-                                imageVector = Icons.Default.Favorite, // Icono de la app (puedes cambiarlo)
+                            Image(
+                                painter = painterResource(id = R.drawable.logo_top_bar),
                                 contentDescription = "App Logo",
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(32.dp)
                             )
 
                             IconButton(onClick = {
-                                // Acción al presionar notificaciones
+
                             }) {
                                 Icon(Icons.Default.Notifications, contentDescription = "Notificaciones")
                             }
@@ -93,7 +96,10 @@ fun DrawerWrapper(navController: NavController, content: @Composable (Modifier) 
                 )
             }
         ) { padding ->
-            content(Modifier.padding(padding))
+//            content(Modifier.padding(padding))
+            Box(modifier = Modifier.padding(padding)) {
+                content()
+            }
         }
     }
 }
@@ -110,7 +116,7 @@ fun DrawerContent(
         drawerContentColor = Color.Black
     ) {
         Text(
-            text = "Menú",
+            text = "Menu",
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(16.dp),
             fontWeight = FontWeight.Bold
@@ -160,7 +166,7 @@ fun DrawerContent(
             ) },
             icon = { Icon(Icons.Default.Dashboard, contentDescription = null) },
             selected = false,
-            onClick = { onItemSelected("dashboard") }
+            onClick = { onItemSelected("home") }
         )
     }
 }

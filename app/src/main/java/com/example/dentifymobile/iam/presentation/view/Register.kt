@@ -33,8 +33,10 @@ import com.example.dentifymobile.iam.presentation.viewmodel.RegisterViewModel
 
 
 @Composable
-fun Register(navController: NavController) {
-    val viewModel = remember { RegisterViewModel(AuthModule.provideRegisterUseCase()) }
+fun Register(
+    viewModel: RegisterViewModel,
+    onRegister: () -> Unit,
+    toLogin: () -> Unit) {
 
     val context = LocalContext.current
 
@@ -53,9 +55,7 @@ fun Register(navController: NavController) {
     LaunchedEffect(registerState) {
         registerState?.let {
             TokenStorage.saveTokens(context, it.accessToken, it.refreshToken)
-            navController.navigate("home") {
-                popUpTo("register") { inclusive = true }
-            }
+            onRegister()
         }
     }
 
@@ -112,9 +112,7 @@ fun Register(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate("login") {
-                        popUpTo("register") { inclusive = true }
-                    }
+                    toLogin()
                 }
         )
     }

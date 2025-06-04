@@ -1,6 +1,7 @@
 package com.example.dentifymobile.patientattention.patient.data.di
 
 import android.content.Context
+import com.example.dentifymobile.core.network.ApiConstants
 import com.example.dentifymobile.iam.data.storage.TokenStorage
 import com.example.dentifymobile.patientattention.patient.data.remote.services.PatientService
 import com.example.dentifymobile.patientattention.patient.data.repository.PatientRepositoryImpl
@@ -8,14 +9,12 @@ import com.example.dentifymobile.patientattention.patient.domain.repository.Pati
 import com.example.dentifymobile.patientattention.patient.domain.usecases.AddPatientUseCase
 import com.example.dentifymobile.patientattention.patient.domain.usecases.DeletePatientUseCase
 import com.example.dentifymobile.patientattention.patient.domain.usecases.GetAllPatientsUseCase
+import com.example.dentifymobile.patientattention.patient.domain.usecases.UpdatePatientUseCase
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object DataModule {
-
-    private const val BASE_URL = "http://10.0.2.2:8081/api/"
-
 
     private fun getRetrofit(context: Context): Retrofit {
 
@@ -31,7 +30,7 @@ object DataModule {
             }.build()
 
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(ApiConstants.BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -55,5 +54,9 @@ object DataModule {
 
     fun deletePatientUseCase(context: Context): DeletePatientUseCase {
         return DeletePatientUseCase(getPatientRepository(context))
+    }
+
+    fun updatePatientUseCase(context: Context): UpdatePatientUseCase {
+        return UpdatePatientUseCase(getPatientRepository(context))
     }
 }

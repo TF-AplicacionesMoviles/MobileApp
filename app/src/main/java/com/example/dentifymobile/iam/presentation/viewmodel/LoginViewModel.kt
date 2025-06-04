@@ -18,6 +18,10 @@ class LoginViewModel(
 
     var errorMessage by mutableStateOf<String?>(null)
 
+    val isAuthenticated: Boolean
+        get() = loginState != null
+
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
             try {

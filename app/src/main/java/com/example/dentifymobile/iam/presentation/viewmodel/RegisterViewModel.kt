@@ -10,7 +10,7 @@ import com.example.dentifymobile.iam.domain.model.Register
 import com.example.dentifymobile.iam.domain.usecases.RegisterUseCase
 import kotlinx.coroutines.launch
 
-class RegisterViewModel (
+class RegisterViewModel(
     private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
@@ -18,6 +18,9 @@ class RegisterViewModel (
         private set
 
     var errorMessage by mutableStateOf<String?>(null)
+
+    val isAuthenticated: Boolean
+        get() = registerState != null
 
     fun register(
         firstName: String,

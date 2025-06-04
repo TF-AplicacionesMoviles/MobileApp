@@ -29,8 +29,8 @@ import com.example.dentifymobile.iam.data.storage.TokenStorage
 import com.example.dentifymobile.iam.presentation.viewmodel.LoginViewModel
 
 @Composable
-fun Login(navController: NavController) {
-    val viewModel = remember { LoginViewModel(AuthModule.provideLoginUseCase()) }
+fun Login( viewModel: LoginViewModel,
+    onLogin: () -> Unit, toRegister: () -> Unit) {
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -42,9 +42,7 @@ fun Login(navController: NavController) {
     LaunchedEffect(loginState) {
         loginState?.let {
             TokenStorage.saveTokens(context, it.accessToken, it.refreshToken)
-            navController.navigate("patients") {
-                popUpTo("login") { inclusive = true }
-            }
+            onLogin()
         }
     }
 
@@ -95,7 +93,7 @@ fun Login(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate("register")
+                    toRegister()
                 }
         )
 

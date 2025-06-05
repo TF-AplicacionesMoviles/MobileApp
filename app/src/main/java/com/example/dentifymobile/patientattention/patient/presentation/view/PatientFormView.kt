@@ -25,6 +25,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,7 +42,12 @@ import com.example.dentifymobile.patientattention.patient.presentation.viewmodel
 import java.util.Calendar
 
 @Composable
-fun PatientFormView(viewModel: PatientFormViewModel, toPatients: () -> Unit, toBack: () -> Unit) {
+fun PatientFormView(viewModel: PatientFormViewModel,
+                    toPatients: () -> Unit,
+                    toBack: () -> Unit) {
+
+    val selectedPatient = viewModel.selectedPatient.value
+
 
     val dni = remember { mutableStateOf("") }
     val firstName = remember { mutableStateOf("") }
@@ -48,6 +55,25 @@ fun PatientFormView(viewModel: PatientFormViewModel, toPatients: () -> Unit, toB
     val email = remember { mutableStateOf("") }
     val homeAddress = remember { mutableStateOf("") }
     val birthday = remember { mutableStateOf("") }
+    val errorMessage = remember { mutableStateOf("") }
+
+
+    LaunchedEffect(selectedPatient) {
+        selectedPatient?.let {
+            firstName.value = it.firstName
+            lastName.value = it.lastName
+            email.value = it.email
+            dni.value = it.dni
+            birthday.value = it.birthday
+            homeAddress.value = it.homeAddress
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.clearSelectedPatient()
+        }
+    }
 
 
     Box(modifier = Modifier.fillMaxSize().padding(top = 20.dp)) {
@@ -78,7 +104,11 @@ fun PatientFormView(viewModel: PatientFormViewModel, toPatients: () -> Unit, toB
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Add a new patient",
+                                text = if(selectedPatient != null) {
+                                    firstName.value + " " + lastName.value
+                                } else {
+                                    "Add a new patient"
+                                },
                                 color = Color.White,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
@@ -86,12 +116,25 @@ fun PatientFormView(viewModel: PatientFormViewModel, toPatients: () -> Unit, toB
                         }
 
                         Column(modifier = Modifier.padding(16.dp)) {
+
                             PatientTextField(label = "ID", value = dni.value) { dni.value = it }
                             PatientTextField(label = "First name", value = firstName.value) { firstName.value = it }
                             PatientTextField(label = "Last name", value = lastName.value) { lastName.value = it }
                             PatientTextField(label = "Email", value = email.value) { email.value = it }
                             PatientTextField(label = "Home address", value = homeAddress.value) { homeAddress.value = it }
                             DatePickerTextField(label = "Birthday", selectedDate = birthday.value) { birthday.value = it }
+
+                            if (errorMessage.value != "") {
+                                Text(
+                                    text = errorMessage.value,
+                                    color = Color.Red,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp, top = 4.dp)
+                                )
+                            }
+
                         }
                     }
 
@@ -99,7 +142,9 @@ fun PatientFormView(viewModel: PatientFormViewModel, toPatients: () -> Unit, toB
                         text = "Go back to patients general view",
                         color = Color(0xFF2C3E50),
                         modifier = Modifier
-                            .clickable { toBack() }
+                            .clickable {
+                                toBack()
+                            }
                             .padding(start = 16.dp, bottom = 16.dp),
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline
@@ -110,18 +155,41 @@ fun PatientFormView(viewModel: PatientFormViewModel, toPatients: () -> Unit, toB
 
         Button(
             onClick = {
-                val patient = Patient(
-                    id = -1L,
-                    dni = dni.value,
-                    firstName = firstName.value,
-                    lastName = lastName.value,
-                    email = email.value,
-                    homeAddress = homeAddress.value,
-                    birthday = birthday.value,
-                    age = -1
-                )
-                viewModel.addPatient(patient)
-                toPatients() },
+
+                if (
+                    dni.value.isBlank() ||
+                    firstName.value.isBlank() ||
+                    lastName.value.isBlank() ||
+                    email.value.isBlank() ||
+                    homeAddress.value.isBlank() ||
+                    birthday.value.isBlank()
+                ) {
+                    errorMessage.value = "All fields must be completed before saving."
+                }
+                else {
+                    val isEditing = viewModel.selectedPatient.value != null
+
+                    val patient = Patient(
+                        id = if (isEditing) viewModel.selectedPatient.value!!.id else -1L,
+                        dni = dni.value,
+                        firstName = firstName.value,
+                        lastName = lastName.value,
+                        email = email.value,
+                        homeAddress = homeAddress.value,
+                        birthday = birthday.value,
+                        age = -1
+                    )
+
+                    if (isEditing) {
+                        viewModel.updatePatient(patient.id, patient)
+                    } else {
+                        viewModel.addPatient(patient)
+                    }
+
+                    errorMessage.value = ""
+                    toPatients()
+                }
+                      },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)

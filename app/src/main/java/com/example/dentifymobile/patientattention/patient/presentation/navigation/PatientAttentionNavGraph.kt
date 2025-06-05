@@ -1,6 +1,7 @@
 package com.example.dentifymobile.patientattention.patient.presentation.navigation
 
 import android.content.Context
+
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -14,12 +15,16 @@ fun NavGraphBuilder.patientAttentionNavGraph(navController: NavController, conte
     val patientsViewModel = PresentationModule.getPatientsViewModel(context)
     val patientFormViewModel = PresentationModule.getPatientFormViewModel(context)
 
+
     navigation(startDestination = "patients", route = "patientAttention") {
 
         composable("patients") {
             PatientsView(
                 patientsViewModel,
-                toPatientForm = {
+                toPatientForm = { patient ->
+                if (patient != null) {
+                    patientFormViewModel.setSelectedPatient(patient)
+                }
                 navController.navigate("patient_form")
             })
         }

@@ -2,6 +2,7 @@ package com.example.dentifymobile.inventory.items.data.remote.services
 
 import com.example.dentifymobile.inventory.items.data.model.ItemResponse
 import com.example.dentifymobile.inventory.items.data.remote.dto.ItemRequest
+import com.example.dentifymobile.inventory.items.data.remote.dto.UpdateRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -20,7 +21,7 @@ interface ItemService {
     @PUT("v1/items/{id}")
     suspend fun updateItem(
         @Path("id") id: Long,
-        @Body itemRequest: ItemRequest
+        @Body updateRequest: UpdateRequest
     ): Response<ItemResponse>
 
     @DELETE("v1/items/{id}")

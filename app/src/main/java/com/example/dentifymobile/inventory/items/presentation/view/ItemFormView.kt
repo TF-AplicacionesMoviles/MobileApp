@@ -142,6 +142,7 @@ fun ItemFormView(viewModel: ItemFormViewModel,
                                     isActive = isActive.value,
                                     category = category.value
                                 )
+                                println("isActive before saving: ${isActive.value}")
                                 if (isEditing) {
                                     viewModel.updateItem(item.id, item)
                                 } else {

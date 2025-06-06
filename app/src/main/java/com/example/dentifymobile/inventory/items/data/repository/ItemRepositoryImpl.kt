@@ -3,6 +3,7 @@ package com.example.dentifymobile.inventory.items.data.repository
 import android.util.Log
 import com.example.dentifymobile.inventory.items.data.model.toItem
 import com.example.dentifymobile.inventory.items.data.remote.dto.ItemRequest
+import com.example.dentifymobile.inventory.items.data.remote.dto.UpdateRequest
 import com.example.dentifymobile.inventory.items.data.remote.services.ItemService
 import com.example.dentifymobile.inventory.items.domain.model.Item
 import com.example.dentifymobile.inventory.items.domain.repository.ItemRepository
@@ -46,11 +47,12 @@ class ItemRepositoryImpl(
 
     override suspend fun updateItem(id: Long, item: Item) = withContext(Dispatchers.IO) {
         val response = apiService.updateItem(id,
-            itemRequest = ItemRequest(
+            updateRequest = UpdateRequest(
                 name = item.name,
                 price = item.price,
                 stockQuantity = item.stockQuantity,
-                category = item.category
+                category = item.category,
+                isActive = item.isActive
             )
         )
         if (response.isSuccessful) {

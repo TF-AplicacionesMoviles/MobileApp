@@ -52,7 +52,11 @@ import androidx.compose.ui.window.Dialog
 
 
 @Composable
-fun PatientsView(viewModel: PatientsViewModel, toPatientForm: (Patient?) -> Unit) {
+fun PatientsView(
+    viewModel: PatientsViewModel,
+    toPatientForm: (Patient?) -> Unit,
+    toMedicalHistories: (Patient) -> Unit
+) {
 
     val patients = viewModel.patients.collectAsState()
 
@@ -133,7 +137,8 @@ fun PatientsView(viewModel: PatientsViewModel, toPatientForm: (Patient?) -> Unit
                     PatientItemView(
                         patient = patient,
                         onDelete = { id -> viewModel.deletePatient(id) },
-                        toPatientForm
+                        toPatientForm,
+                        toMedicalHistories
                     )
                 }
             }
@@ -162,7 +167,8 @@ fun PatientsView(viewModel: PatientsViewModel, toPatientForm: (Patient?) -> Unit
 fun PatientItemView(
     patient: Patient,
     onDelete: (Long) -> Unit,
-    toPatientForm: (Patient?) -> Unit
+    toPatientForm: (Patient?) -> Unit,
+    toMedicalHistories: (Patient) -> Unit
 ) {
 
     val showDialog = remember { mutableStateOf(false) }
@@ -213,7 +219,7 @@ fun PatientItemView(
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable {
-
+                            toMedicalHistories(patient)
                         }
                     )
                     Text(

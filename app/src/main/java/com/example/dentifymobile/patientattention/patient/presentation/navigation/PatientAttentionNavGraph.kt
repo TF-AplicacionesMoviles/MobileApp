@@ -6,7 +6,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.dentifymobile.patientattention.medicalhistory.presentation.view.MedicalHistoriesView
 import com.example.dentifymobile.patientattention.patient.presentation.di.PresentationModule
+import com.example.dentifymobile.patientattention.medicalhistory.presentation.di.PresentationModuleMedical
 import com.example.dentifymobile.patientattention.patient.presentation.view.PatientFormView
 import com.example.dentifymobile.patientattention.patient.presentation.view.PatientsView
 
@@ -14,7 +16,7 @@ fun NavGraphBuilder.patientAttentionNavGraph(navController: NavController, conte
 
     val patientsViewModel = PresentationModule.getPatientsViewModel(context)
     val patientFormViewModel = PresentationModule.getPatientFormViewModel(context)
-
+    val medicalHistoriesViewModel = PresentationModuleMedical.getMedicalHistoriesViewModel(context)
 
     navigation(startDestination = "patients", route = "patientAttention") {
 
@@ -22,11 +24,16 @@ fun NavGraphBuilder.patientAttentionNavGraph(navController: NavController, conte
             PatientsView(
                 patientsViewModel,
                 toPatientForm = { patient ->
-                if (patient != null) {
+                    if (patient != null) {
+                        patientFormViewModel.setSelectedPatient(patient)
+                    }
+                    navController.navigate("patient_form")
+                },
+                toMedicalHistories = { patient ->
                     patientFormViewModel.setSelectedPatient(patient)
+                    navController.navigate("medical_histories")
                 }
-                navController.navigate("patient_form")
-            })
+            )
         }
 
         composable("patient_form") {
@@ -41,5 +48,13 @@ fun NavGraphBuilder.patientAttentionNavGraph(navController: NavController, conte
             )
         }
 
+        composable("medical_histories") {
+            MedicalHistoriesView(
+                medicalHistoriesViewModel,
+                toBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }

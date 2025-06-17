@@ -35,4 +35,9 @@ class AppointmentViewModel(
         }
 
     }
+
+    fun getAppointmentById(id: Long): Appointment? {
+        return appointments.value.find { it.id == id }
+    }
+
 }

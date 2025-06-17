@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dentifymobile.patientattention.appointments.data.remote.dto.AddAppointmentRequest
+import com.example.dentifymobile.patientattention.appointments.data.remote.dto.UpdateAppointmentRequest
 import com.example.dentifymobile.patientattention.appointments.domain.model.Appointment
 import com.example.dentifymobile.patientattention.appointments.domain.model.PatientDataForm
 import com.example.dentifymobile.patientattention.appointments.domain.usecases.AddAppointmentUseCase
@@ -21,13 +22,19 @@ class AppointmentFormViewModel (
 
 ): ViewModel() {
 
+    val currentAppointment = mutableStateOf<Appointment?>(null)
+
     fun addAppointment(appointment: AddAppointmentRequest){
         viewModelScope.launch {
             addAppointmentUseCase(appointment)
         }
     }
 
-    fun updateAppointment(id: Long, appointment: Appointment){
+    fun setCurrentAppointment(appointment: Appointment) {
+        currentAppointment.value = appointment
+    }
+
+    fun updateAppointment(id: Long, appointment: UpdateAppointmentRequest){
         viewModelScope.launch {
             updateAppointmentUseCase(id, appointment)
         }

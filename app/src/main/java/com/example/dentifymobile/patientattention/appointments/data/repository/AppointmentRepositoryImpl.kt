@@ -47,7 +47,7 @@ class AppointmentRepositoryImpl (
 
     override suspend fun updateAppointment(
         id: Long,
-        appointment: Appointment
+        appointment: UpdateAppointmentRequest
     ) = withContext(Dispatchers.IO) {
         val response = appointmentService.updateAppointment(id,
             UpdateAppointmentRequest(

@@ -42,7 +42,7 @@ import com.example.dentifymobile.patientattention.appointments.domain.model.Appo
 import com.example.dentifymobile.patientattention.appointments.presentation.viewmodel.AppointmentViewModel
 
 @Composable
-fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -> Unit){
+fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -> Unit, toUpdateAppointmentForm: (Long)-> Unit){
     val appointments = viewModel.appointments.collectAsState()
     val expanded = remember { mutableStateOf(false) }
 
@@ -56,7 +56,9 @@ fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -
                 items(appointments.value) { appointment ->
                     AppointmentItemView(
                         appointment = appointment,
-                        onDelete = {id -> viewModel.deleteAppointment(id)}
+                        onDelete = {id -> viewModel.deleteAppointment(id)},
+                        onEdit = { appointment -> toUpdateAppointmentForm(appointment.id) }
+
                     )
                 }
             }
@@ -81,7 +83,7 @@ fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -
 }
 
 @Composable
-fun AppointmentItemView(appointment: Appointment, onDelete: (Long)-> Unit){
+fun AppointmentItemView(appointment: Appointment, onDelete: (Long)-> Unit, onEdit: (Appointment)-> Unit){
     val showDialog = remember { mutableStateOf(false) }
 
     Card(
@@ -133,7 +135,7 @@ fun AppointmentItemView(appointment: Appointment, onDelete: (Long)-> Unit){
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable {
-
+                            onEdit(appointment)
                         }
                     )
                     Text(

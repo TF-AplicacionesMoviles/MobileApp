@@ -19,6 +19,6 @@ interface AppointmentService {
     @POST("v1/appointments")
     suspend fun addAppointment(@Body appointment: AddAppointmentRequest): Response<Unit>
     @PUT("v1/appointments/{id}")
-    suspend fun updateAppointment(@Path("id") id: Long, @Body appointment: UpdateAppointmentRequest ): Response<AppointmentResponse>
+    suspend fun updateAppointment(@Path("id") id: Long, @Body appointment: UpdateAppointmentRequest ): Response<Unit>
 
 }

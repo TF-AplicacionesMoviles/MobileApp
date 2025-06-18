@@ -8,6 +8,7 @@ import com.example.dentifymobile.dashboard.presentation.navigation.dashboardNavG
 import com.example.dentifymobile.inventory.items.presentation.navigation.inventoryNavGraph
 import com.example.dentifymobile.patientattention.appointments.presentation.navigation.appointmentNavGraph
 import com.example.dentifymobile.patientattention.patient.presentation.navigation.patientAttentionNavGraph
+import com.example.dentifymobile.payment.presentation.navigation.invoiceNavGraph
 
 @Composable
 fun AppContentNavHost(navController: NavHostController) {
@@ -23,6 +24,7 @@ fun AppContentNavHost(navController: NavHostController) {
         patientAttentionNavGraph(navController, context)
         inventoryNavGraph(navController, context)
         appointmentNavGraph(navController, context)
+        invoiceNavGraph(navController, context)
         //agregar navgraphs
     }
 }

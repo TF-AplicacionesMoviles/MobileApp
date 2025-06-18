@@ -2,6 +2,7 @@ package com.example.dentifymobile.patientattention.patient.presentation.viewmode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
 import com.example.dentifymobile.patientattention.patient.domain.model.Patient
 import com.example.dentifymobile.patientattention.patient.domain.usecases.DeletePatientUseCase
 import com.example.dentifymobile.patientattention.patient.domain.usecases.GetAllPatientsUseCase

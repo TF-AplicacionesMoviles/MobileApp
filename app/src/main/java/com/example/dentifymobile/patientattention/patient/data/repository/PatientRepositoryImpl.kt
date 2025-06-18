@@ -1,6 +1,7 @@
 package com.example.dentifymobile.patientattention.patient.data.repository
 
 import android.util.Log
+
 import com.example.dentifymobile.patientattention.patient.data.remote.dto.PatientRequest
 import com.example.dentifymobile.patientattention.patient.data.remote.services.PatientService
 import com.example.dentifymobile.patientattention.patient.domain.model.Patient
@@ -66,7 +67,8 @@ class PatientRepositoryImpl(
                 email = patient.email,
                 homeAddress = patient.homeAddress,
                 birthday = patient.birthday
-            ))
+            )
+        )
 
         if(!response.isSuccessful) {
             Log.e(TAG, "Error updating patient: ${response.code()} - ${response.message()}")

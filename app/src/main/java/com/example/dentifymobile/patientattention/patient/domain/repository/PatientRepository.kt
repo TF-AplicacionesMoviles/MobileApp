@@ -1,5 +1,6 @@
 package com.example.dentifymobile.patientattention.patient.domain.repository
 
+
 import com.example.dentifymobile.patientattention.patient.domain.model.Patient
 
 interface PatientRepository {

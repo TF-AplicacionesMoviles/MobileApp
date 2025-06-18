@@ -13,8 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,55 +24,30 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.dentifymobile.patientattention.patient.domain.model.Patient
+import com.example.dentifymobile.patientattention.patient.domain.model.MedicalHistory
+import com.example.dentifymobile.patientattention.patient.presentation.viewmodel.MedicalHistoryFormViewModel
 
-import com.example.dentifymobile.patientattention.patient.presentation.viewmodel.PatientFormViewModel
-import java.util.Calendar
 
 @Composable
-fun PatientFormView(viewModel: PatientFormViewModel,
-                    toPatients: () -> Unit) {
+fun MedicalHistoryFormView(
+    viewModel: MedicalHistoryFormViewModel,
+    toMedicalHistories: () -> Unit
+) {
 
-    val selectedPatient = viewModel.selectedPatient.value
-
-
-    val dni = remember { mutableStateOf("") }
-    val firstName = remember { mutableStateOf("") }
-    val lastName = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val homeAddress = remember { mutableStateOf("") }
-    val birthday = remember { mutableStateOf("") }
+    val description = remember { mutableStateOf("") }
+    val record = remember { mutableStateOf("") }
+    val diagnosis = remember { mutableStateOf("") }
+    val medication = remember { mutableStateOf("") }
     val errorMessage = remember { mutableStateOf("") }
-
-
-    LaunchedEffect(selectedPatient) {
-        selectedPatient?.let {
-            firstName.value = it.firstName
-            lastName.value = it.lastName
-            email.value = it.email
-            dni.value = it.dni
-            birthday.value = it.birthday
-            homeAddress.value = it.homeAddress
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.clearSelectedPatient()
-        }
-    }
 
 
     Box(modifier = Modifier.fillMaxSize().padding(top = 20.dp)) {
@@ -98,17 +72,13 @@ fun PatientFormView(viewModel: PatientFormViewModel,
                                 .padding(16.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Persona",
+                                imageVector = Icons.Default.ContentPaste,
+                                contentDescription = "Medical History",
                                 tint = Color.White
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = if(selectedPatient != null) {
-                                    firstName.value + " " + lastName.value
-                                } else {
-                                    "Add a new patient"
-                                },
+                                text = "New medical history",
                                 color = Color.White,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
@@ -117,12 +87,11 @@ fun PatientFormView(viewModel: PatientFormViewModel,
 
                         Column(modifier = Modifier.padding(16.dp)) {
 
-                            PatientTextField(label = "ID", value = dni.value) { dni.value = it }
-                            PatientTextField(label = "First name", value = firstName.value) { firstName.value = it }
-                            PatientTextField(label = "Last name", value = lastName.value) { lastName.value = it }
-                            PatientTextField(label = "Email", value = email.value) { email.value = it }
-                            PatientTextField(label = "Home address", value = homeAddress.value) { homeAddress.value = it }
-                            DatePickerTextField(label = "Birthday", selectedDate = birthday.value) { birthday.value = it }
+                            MedicalHistoryTextField(label = "Description", value = description.value) { description.value = it }
+                            MedicalHistoryTextField(label = "Record", value = record.value) { record.value = it }
+                            MedicalHistoryTextField(label = "Diagnosis", value = diagnosis.value) { diagnosis.value = it }
+                            MedicalHistoryTextField(label = "Medication", value = medication.value) { medication.value = it }
+
 
                             if (errorMessage.value != "") {
                                 Text(
@@ -139,11 +108,11 @@ fun PatientFormView(viewModel: PatientFormViewModel,
                     }
 
                     Text(
-                        text = "Go back to patients general view",
+                        text = "Go back to medical histories general view",
                         color = Color(0xFF2C3E50),
                         modifier = Modifier
                             .clickable {
-                                toPatients()
+                                toMedicalHistories()
                             }
                             .padding(start = 16.dp, bottom = 16.dp),
                         fontWeight = FontWeight.Bold,
@@ -153,43 +122,33 @@ fun PatientFormView(viewModel: PatientFormViewModel,
             }
         }
 
+
         Button(
             onClick = {
 
                 if (
-                    dni.value.isBlank() ||
-                    firstName.value.isBlank() ||
-                    lastName.value.isBlank() ||
-                    email.value.isBlank() ||
-                    homeAddress.value.isBlank() ||
-                    birthday.value.isBlank()
+                    description.value.isBlank() ||
+                    record.value.isBlank() ||
+                    diagnosis.value.isBlank() ||
+                    medication.value.isBlank()
                 ) {
                     errorMessage.value = "All fields must be completed before saving."
                 }
                 else {
-                    val isEditing = viewModel.selectedPatient.value != null
-
-                    val patient = Patient(
-                        id = if (isEditing) viewModel.selectedPatient.value!!.id else -1L,
-                        dni = dni.value,
-                        firstName = firstName.value,
-                        lastName = lastName.value,
-                        email = email.value,
-                        homeAddress = homeAddress.value,
-                        birthday = birthday.value,
-                        age = -1
+                    val medicalHistory = MedicalHistory(
+                        id = -1L,
+                        description = description.value,
+                        record = record.value,
+                        diagnosis = diagnosis.value,
+                        medication = medication.value,
+                        date = "",
                     )
 
-                    if (isEditing) {
-                        viewModel.updatePatient(patient.id, patient)
-                    } else {
-                        viewModel.addPatient(patient)
-                    }
-
+                    viewModel.selectedPatient.value?.let { viewModel.addMedicalHistory(it.id, medicalHistory) }
                     errorMessage.value = ""
-                    toPatients()
+                    toMedicalHistories()
                 }
-                      },
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -201,13 +160,13 @@ fun PatientFormView(viewModel: PatientFormViewModel,
                 fontSize = 16.sp
             )
         }
+
     }
 }
 
 
-
 @Composable
-fun PatientTextField(label: String, value: String, onValueChange: (String) -> Unit) {
+fun MedicalHistoryTextField(label: String, value: String, onValueChange: (String) -> Unit) {
     Column(modifier = Modifier.padding(vertical = 3.dp)) {
         Text(text = label, fontWeight = FontWeight.Bold)
         Box(
@@ -228,58 +187,4 @@ fun PatientTextField(label: String, value: String, onValueChange: (String) -> Un
             )
         }
     }
-}
-
-
-
-
-
-@Composable
-fun DatePickerTextField(
-    label: String,
-    selectedDate: String,
-    onDateSelected: (String) -> Unit
-) {
-    val context = LocalContext.current
-    val calendar = Calendar.getInstance()
-
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-    val datePickerDialog = remember {
-        android.app.DatePickerDialog(context, { _, y, m, d ->
-            val formatted = "%04d-%02d-%02d".format(y, m + 1, d)
-            onDateSelected(formatted)
-        }, year, month, day)
-    }
-
-    Column(modifier = Modifier.padding(vertical = 3.dp)) {
-        Text(text = label, fontWeight = FontWeight.Bold)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(12.dp))
-        ) {
-            OutlinedTextField(
-                value = selectedDate,
-                onValueChange = onDateSelected,
-                readOnly = true,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth(),
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Pick date",
-                        modifier = Modifier
-                            .clickable {
-                                datePickerDialog.show()
-                            },
-                    )
-                }
-            )
-        }
-    }
-
 }

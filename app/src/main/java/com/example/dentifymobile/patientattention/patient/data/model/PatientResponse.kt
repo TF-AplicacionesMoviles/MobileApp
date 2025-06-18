@@ -1,5 +1,6 @@
 package com.example.dentifymobile.patientattention.patient.data.model
 
+import com.example.dentifymobile.patientattention.appointments.domain.model.PatientDataForm
 import com.example.dentifymobile.patientattention.patient.domain.model.Patient
 import java.text.SimpleDateFormat
 import java.util.Calendar

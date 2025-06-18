@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import com.example.dentifymobile.R
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
+import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -96,16 +97,12 @@ fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit)
                 )
             }
         ) { padding ->
-//            content(Modifier.padding(padding))
             Box(modifier = Modifier.padding(padding)) {
                 content()
             }
         }
     }
 }
-
-
-
 
 @Composable
 fun DrawerContent(
@@ -151,7 +148,7 @@ fun DrawerContent(
             ) },
             icon = { Icon(Icons.Default.CreditCard, contentDescription = null) },
             selected = false,
-            onClick = { onItemSelected("payments") }
+            onClick = { onItemSelected("payment") }
         )
         NavigationDrawerItem(
             label = { Text("Profile",

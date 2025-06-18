@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import com.example.dentifymobile.dashboard.presentation.navigation.dashboardNavGraph
 import com.example.dentifymobile.patientattention.appointments.presentation.navigation.appointmentNavGraph
 import com.example.dentifymobile.patientattention.patient.presentation.navigation.patientAttentionNavGraph
+import com.example.dentifymobile.payment.presentation.navigation.paymentNavGraph
 
 @Composable
 fun AppContentNavHost(navController: NavHostController) {
@@ -21,6 +22,6 @@ fun AppContentNavHost(navController: NavHostController) {
         dashboardNavGraph(navController)
         patientAttentionNavGraph(navController, context)
         appointmentNavGraph(navController, context)
-        //agregar navgraphs
+        paymentNavGraph(navController, context)
     }
 }

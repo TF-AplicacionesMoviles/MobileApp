@@ -21,11 +21,6 @@ import androidx.compose.foundation.background
 fun PaymentScreen(viewModel: PaymentViewModel, navController: NavController) {
     val uiState = viewModel.uiState.value  // Obtenemos el estado del ViewModel
 
-    // Si el estado es "Loading", mostramos un indicador de carga
-    if (uiState is UiState.Loading) {
-        CircularProgressIndicator(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center))
-    }
-
     // Si el estado es "Success", mostramos los pagos
     if (uiState is UiState.Success) {
         val payments = uiState.data

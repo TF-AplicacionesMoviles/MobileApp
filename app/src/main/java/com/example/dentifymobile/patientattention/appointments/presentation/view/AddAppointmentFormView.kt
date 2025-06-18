@@ -219,7 +219,6 @@ fun TimeTextField(label: String, value: String, onTimeSelected: (String) -> Unit
     }
 }
 
-
 @Composable
 fun AppointmentDatePickerTextField(
     label: String,
@@ -235,22 +234,35 @@ fun AppointmentDatePickerTextField(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White, shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                .background(Color.White, shape = RoundedCornerShape(12.dp))
                 .clickable {
                     DatePickerDialog(
                         context,
                         { _, year, month, dayOfMonth ->
-                            calendar.set(year, month, dayOfMonth)
-                            calendar.set(Calendar.HOUR_OF_DAY, 0)
-                            calendar.set(Calendar.MINUTE, 0)
-                            calendar.set(Calendar.SECOND, 0)
-                            calendar.set(Calendar.MILLISECOND, 0)
+                            calendar.set(Calendar.YEAR, year)
+                            calendar.set(Calendar.MONTH, month)
+                            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-                            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-                            sdf.timeZone = TimeZone.getTimeZone("UTC")
-                            val formatted = sdf.format(calendar.time)
+                            // Después de seleccionar la fecha, abrimos el time picker
+                            TimePickerDialog(
+                                context,
+                                { _, hourOfDay, minute ->
+                                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                                    calendar.set(Calendar.MINUTE, minute)
+                                    calendar.set(Calendar.SECOND, 0)
+                                    calendar.set(Calendar.MILLISECOND, 0)
 
-                            onDateTimeSelected(formatted)
+                                    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+                                    sdf.timeZone = TimeZone.getTimeZone("UTC")
+                                    val formatted = sdf.format(calendar.time)
+
+                                    onDateTimeSelected(formatted)
+                                },
+                                calendar.get(Calendar.HOUR_OF_DAY),
+                                calendar.get(Calendar.MINUTE),
+                                true
+                            ).show()
+
                         },
                         calendar.get(Calendar.YEAR),
                         calendar.get(Calendar.MONTH),
@@ -267,6 +279,7 @@ fun AppointmentDatePickerTextField(
         }
     }
 }
+
 
 @Composable
 fun PatientDropdown(

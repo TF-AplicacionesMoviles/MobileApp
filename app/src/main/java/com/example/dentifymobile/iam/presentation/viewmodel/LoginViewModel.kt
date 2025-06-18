@@ -18,11 +18,18 @@ class LoginViewModel(
 
     var errorMessage by mutableStateOf<String?>(null)
 
+    val isAuthenticated: Boolean
+        get() = loginState != null
+
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
             try {
                 val response = loginUseCase(username, password)
+                println("ACCESS TOKEN: ${response.accessToken}")
+                println("REFRESH TOKEN: ${response.refreshToken}")
                 loginState = response
+                errorMessage = null
             } catch (e: Exception) {
                 errorMessage = e.message
             }

@@ -25,20 +25,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.dentifymobile.patientattention.patient.domain.model.Patient
-import com.example.dentifymobile.patientattention.patient.presentation.viewmodel.PatientsViewModel
-
-
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Tune
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -49,16 +44,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-
+import com.example.dentifymobile.patientattention.patient.domain.model.Patient
+import com.example.dentifymobile.patientattention.patient.presentation.viewmodel.PatientsViewModel
+import kotlin.collections.filter
 
 @Composable
-fun PatientsView(viewModel: PatientsViewModel, toPatientForm: () -> Unit) {
+fun PatientsView(
+    viewModel: PatientsViewModel,
+    toPatientForm: (Patient?) -> Unit,
+    toMedicalHistories: (Patient?) -> Unit
+) {
 
     val patients = viewModel.patients.collectAsState()
 
     val searchedPatient = remember { mutableStateOf("") }
 
-    val expanded = remember { mutableStateOf(false) }
+//    val expanded = remember { mutableStateOf(false) }
+
+    val filteredPatients = patients.value.filter {
+        val query = searchedPatient.value.trim().lowercase()
+        it.firstName.lowercase().contains(query) ||
+                it.lastName.lowercase().contains(query) ||
+                it.dni.contains(query)
+
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getAllPatients()
@@ -89,33 +98,33 @@ fun PatientsView(viewModel: PatientsViewModel, toPatientForm: () -> Unit) {
                         )
                     }
                 },
-                trailingIcon = {
-                    Box {
-                        IconButton(onClick = { expanded.value = true }) {
-                            Icon(
-                                imageVector = Icons.Default.Tune,
-                                contentDescription = "Filter"
-                            )
-                        }
+//                trailingIcon = {
+//                    Box {
+//                        IconButton(onClick = { expanded.value = true }) {
+//                            Icon(
+//                                imageVector = Icons.Default.Tune,
+//                                contentDescription = "Filter"
+//                            )
+//                        }
+//
+//                        DropdownMenu(
+//                            expanded = expanded.value,
+//                            onDismissRequest = { expanded.value = false }
+//                        ) {
+//                            DropdownMenuItem(
+//                                text = { Text(
+//                                    text = "Filter by DNI",
+//                                    modifier = Modifier.fillMaxWidth(),
+//                                    textAlign = TextAlign.Center) },
+//                                onClick = {
+//                                    expanded.value = false
+//                                    //lógica de filtro por DNI
+//                                    println("Filter by DNI")
+//                                }
+//                            )
+//                        }
+//                    }
 
-                        DropdownMenu(
-                            expanded = expanded.value,
-                            onDismissRequest = { expanded.value = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(
-                                    text = "Filter by DNI",
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center) },
-                                onClick = {
-                                    expanded.value = false
-                                    //lógica de filtro por DNI
-                                    println("Filter by DNI")
-                                }
-                            )
-                        }
-                    }
-                },
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFFD1F2EB),
@@ -129,10 +138,12 @@ fun PatientsView(viewModel: PatientsViewModel, toPatientForm: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
 
             LazyColumn(modifier = Modifier.padding(top = 2.dp)) {
-                items(patients.value) { patient ->
+                items(filteredPatients) { patient ->
                     PatientItemView(
                         patient = patient,
-                        onDelete = { id -> viewModel.deletePatient(id) }
+                        onDelete = { id -> viewModel.deletePatient(id) },
+                        toPatientForm = toPatientForm,
+                        toMedicalHistories = toMedicalHistories
                     )
                 }
             }
@@ -140,7 +151,7 @@ fun PatientsView(viewModel: PatientsViewModel, toPatientForm: () -> Unit) {
 
 
         Button(
-            onClick = { toPatientForm() },
+            onClick = { toPatientForm(null) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -160,7 +171,9 @@ fun PatientsView(viewModel: PatientsViewModel, toPatientForm: () -> Unit) {
 @Composable
 fun PatientItemView(
     patient: Patient,
-    onDelete: (Long) -> Unit
+    onDelete: (Long) -> Unit,
+    toPatientForm: (Patient?) -> Unit,
+    toMedicalHistories: (Patient?) -> Unit
 ) {
 
     val showDialog = remember { mutableStateOf(false) }
@@ -211,7 +224,7 @@ fun PatientItemView(
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable {
-
+                            toMedicalHistories(patient)
                         }
                     )
                     Text(
@@ -220,7 +233,7 @@ fun PatientItemView(
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable {
-
+                            toPatientForm(patient)
                         }
                     )
                     Text(

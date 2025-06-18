@@ -1,5 +1,6 @@
 package com.example.dentifymobile.patientattention.appointments.presentation.view
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.TimePicker
@@ -180,6 +181,7 @@ fun <T> AppointmentTextField(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun TimeTextField(label: String, value: String, onTimeSelected: (String) -> Unit){
     val calendar = Calendar.getInstance()

@@ -4,5 +4,5 @@ import com.example.dentifymobile.payment.domain.model.Payment
 
 interface PaymentRepository {
     suspend fun getPayments(): List<Payment>
-    suspend fun addPayment(payment: Payment): Boolean
+    suspend fun addPayment(payment: Payment)
 }

@@ -19,6 +19,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -106,7 +108,10 @@ fun ItemFormView(viewModel: ItemFormViewModel,
                     Spacer(modifier = Modifier.height(8.dp))
                     CreateItemTextField("Name", name.value) { name.value = it }
                     CreateItemTextField("Quantity", stockQuantity.intValue) { stockQuantity.intValue = it }
-                    CreateItemTextField("Category", category.value) { category.value = it }
+                    CategoryDropdownMenu(
+                        selectedCategory = category.value,
+                        onCategorySelected = { category.value = it }
+                    )
                     CreateItemTextField("Price", price.doubleValue) { price.doubleValue = it }
                     isActive.value = true
 
@@ -254,6 +259,57 @@ fun <T> CreateItemTextField(label: String, value: T, onValueChange: (T) -> Unit)
                     focusedContainerColor = Color.Transparent
                 )
             )
+        }
+    }
+}
+@Composable
+fun CategoryDropdownMenu(
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit
+) {
+    val options = listOf(
+        "DENTAL_INSTRUMENTS",
+        "DISPOSABLE_SUPPLIES",
+        "CLEANING_AND_DISINFECTION",
+        "RESTORATIVE_MATERIALS",
+        "ORTHODONTIC_SUPPLIES",
+        "ENDODONTIC_SUPPLIES",
+        "SURGICAL_SUPPLIES",
+        "PROTECTIVE_EQUIPMENT",
+        "IMAGING_EQUIPMENT",
+        "CONSUMABLES",
+        "MEDICATIONS"
+    )
+
+    val expanded = remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.padding(vertical = 2.dp)) {
+        Text(text = "Category", fontWeight = FontWeight.Bold)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White, RoundedCornerShape(12.dp))
+                .clickable { expanded.value = true }
+                .padding(12.dp)
+        ) {
+            Text(text = selectedCategory.ifBlank { "Select a category" })
+        }
+
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false },
+            modifier = Modifier
+                .background(Color.White)
+        ) {
+            options.forEach { category ->
+                DropdownMenuItem(
+                    text = { Text(category) },
+                    onClick = {
+                        onCategorySelected(category)
+                        expanded.value = false
+                    }
+                )
+            }
         }
     }
 }

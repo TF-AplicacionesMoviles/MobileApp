@@ -50,7 +50,6 @@ import com.example.dentifymobile.iam.data.storage.TokenStorage
 fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -58,13 +57,8 @@ fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit)
                 onItemSelected = { route ->
                     scope.launch {
                         drawerState.close()
-                        if (route == "logout") {
+                        navController.navigate(route)
 
-                            // Aquí haces la limpieza
-                            logoutUser(context, navController)
-                        } else {
-                            navController.navigate(route)
-                        }
                     }
                 }
             )
@@ -175,11 +169,3 @@ fun DrawerContent(
     }
 }
 
-fun logoutUser(context: Context, navController: NavController) {
-
-    TokenStorage.clearTokens(context)
-    // Limpiar backstack y navegar al login
-    navController.navigate("authentication/login") {
-        popUpTo("app") { inclusive = true }
-    }
-}

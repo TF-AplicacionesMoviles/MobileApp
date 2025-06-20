@@ -43,10 +43,12 @@ import com.example.dentifymobile.patientattention.appointments.domain.model.Appo
 import com.example.dentifymobile.patientattention.appointments.presentation.dto.AppointmentUIModel
 import com.example.dentifymobile.patientattention.appointments.presentation.viewmodel.AppointmentViewModel
 
+
+
 @Composable
 fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: (onReturn: () -> Unit) -> Unit, toUpdateAppointmentForm: (Long)-> Unit){
     val appointments = viewModel.appointments.collectAsState()
-    val expanded = remember { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         viewModel.getAllAppointments()

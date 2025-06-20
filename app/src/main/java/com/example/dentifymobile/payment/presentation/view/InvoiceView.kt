@@ -65,17 +65,48 @@ fun InvoiceView(viewModel: InvoiceViewModel, toAddInvoiceForm: () -> Unit){
 
 @Composable
 fun InvoiceItemView(invoice: Invoice) {
-
-    Card(modifier = Modifier.padding(8.dp), colors = CardDefaults.cardColors()) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Appointment ID: ${invoice.appointmentId}")
-            Text(invoice.patientName, style = MaterialTheme.typography.titleMedium)
-            Text("DNI: ${invoice.dni}")
-            Text("Email: ${invoice.email}")
-            Text("Amount: ${invoice.amount}")
-            Text("Fecha: ${invoice.createdAt}")
+            Text(
+                text = "Invoice for ${invoice.patientName}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = Color(0xFF2C3E50)
+            )
+            Text(
+                text = "Appointment ID: ${invoice.appointmentId}",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = "DNI: ${invoice.dni}",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = "Email: ${invoice.email}",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = "Amount: S/ ${invoice.amount}",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                color = Color(0xFF27AE60)
+            )
+            Text(
+                text = "Created at: ${invoice.createdAt.take(10)}",
+                fontSize = 12.sp,
+                color = Color(0xFF7F8C8D)
+            )
         }
     }
-
-
 }

@@ -33,4 +33,6 @@ object AuthModule {
     fun provideRegisterUseCase(): RegisterUseCase {
         return RegisterUseCase(provideAuthRepository())
     }
+
+
 }

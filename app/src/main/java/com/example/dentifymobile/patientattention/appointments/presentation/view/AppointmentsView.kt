@@ -44,7 +44,7 @@ import com.example.dentifymobile.patientattention.appointments.presentation.dto.
 import com.example.dentifymobile.patientattention.appointments.presentation.viewmodel.AppointmentViewModel
 
 @Composable
-fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -> Unit, toUpdateAppointmentForm: (Long)-> Unit){
+fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: (onReturn: () -> Unit) -> Unit, toUpdateAppointmentForm: (Long)-> Unit){
     val appointments = viewModel.appointments.collectAsState()
     val expanded = remember { mutableStateOf(false) }
 
@@ -67,7 +67,9 @@ fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -
         }
 
         Button(
-            onClick = { toAddAppointmentForm() },
+            onClick = { toAddAppointmentForm{
+                viewModel.getAllAppointments()
+            } },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)

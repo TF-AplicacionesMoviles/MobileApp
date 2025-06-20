@@ -31,14 +31,16 @@ fun NavGraphBuilder.appointmentNavGraph(navController: NavController, context: C
 
         composable ("add_appointment_form"){
             AddAppointmentFormView(
-                appointmentFormViewModel,
+                viewModel = appointmentFormViewModel,
                 toAppointments = {
-                    navController.navigate("appointments")
+                    navController.popBackStack()
                 },
                 toBack = {
                     navController.popBackStack()
+                },
+                onAppointmentSaved = {
+                    appointmentsViewModel.getAllAppointments()
                 }
-
             )
         }
 

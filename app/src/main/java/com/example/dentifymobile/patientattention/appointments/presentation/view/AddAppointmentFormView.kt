@@ -54,7 +54,7 @@ import java.util.TimeZone
 
 
 @Composable
-fun AddAppointmentFormView(viewModel: AppointmentFormViewModel, toAppointments: ()-> Unit, toBack: ()-> Unit) {
+fun AddAppointmentFormView(viewModel: AppointmentFormViewModel, toAppointments: ()-> Unit, toBack: ()-> Unit, onAppointmentSaved: () -> Unit) {
     val appointmentDate = remember { mutableStateOf("") }
     val reason = remember { mutableStateOf("") }
     val duration = remember { mutableStateOf("") }
@@ -130,6 +130,7 @@ fun AddAppointmentFormView(viewModel: AppointmentFormViewModel, toAppointments: 
                                     patientId = patientId.longValue
                                 )
                                 viewModel.addAppointment(appointment)
+                                onAppointmentSaved()
                                 toAppointments()
                             },
                             modifier = Modifier.fillMaxWidth(),

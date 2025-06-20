@@ -1,5 +1,6 @@
 package com.example.dentifymobile.navigation
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -40,14 +41,15 @@ import androidx.navigation.NavController
 import com.example.dentifymobile.R
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.ui.platform.LocalContext
+import com.example.dentifymobile.iam.data.storage.TokenStorage
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -56,6 +58,7 @@ fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit)
                     scope.launch {
                         drawerState.close()
                         navController.navigate(route)
+
                     }
                 }
             )
@@ -79,13 +82,15 @@ fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit)
                             Image(
                                 painter = painterResource(id = R.drawable.logo_top_bar),
                                 contentDescription = "App Logo",
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(36.dp)
                             )
 
-                            IconButton(onClick = {
-
-                            }) {
-                                Icon(Icons.Default.Notifications, contentDescription = "Notificaciones")
+                            IconButton(onClick = { /* Acción de notificación */ }) {
+                                Icon(
+                                    Icons.Default.Notifications,
+                                    contentDescription = "Notificaciones",
+                                    tint = Color(0xFF2C3E50)
+                                )
                             }
                         }
                     },
@@ -96,16 +101,12 @@ fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit)
                 )
             }
         ) { padding ->
-//            content(Modifier.padding(padding))
             Box(modifier = Modifier.padding(padding)) {
                 content()
             }
         }
     }
 }
-
-
-
 
 @Composable
 fun DrawerContent(
@@ -115,58 +116,56 @@ fun DrawerContent(
         drawerContainerColor = Color(0xFFD1F2EB),
         drawerContentColor = Color.Black
     ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_top_bar),
+                contentDescription = "Logo",
+                modifier = Modifier.size(48.dp)
+            )
+            Text(
+                text = "Dentify",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 12.dp),
+                color = Color(0xFF2C3E50)
+            )
+        }
         Text(
-            text = "Menu",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(16.dp),
-            fontWeight = FontWeight.Bold
+            text = "Menu principal",
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+            color = Color.DarkGray
         )
-        NavigationDrawerItem(
-            label = { Text("Appointments",
-                fontWeight = FontWeight.Bold
-            ) },
-            icon = { Icon(Icons.Default.ContentPasteSearch, contentDescription = null) },
-            selected = false,
-            onClick = { onItemSelected("appointments") },
+
+        val items = listOf(
+            Triple("Dashboard", Icons.Default.Dashboard, "home"),
+            Triple("Appointments", Icons.Default.ContentPasteSearch, "appointments"),
+            Triple("Patients", Icons.Default.AirlineSeatFlatAngled, "patientAttention"),
+            Triple("Inventory", Icons.Default.Inventory, "inventory"),
+            Triple("Payments", Icons.Default.CreditCard, "payments"),
+            Triple("Profile", Icons.Default.AccountBalance, "profile"),
+            Triple("Logout", Icons.Default.Logout, "logout")
         )
-        NavigationDrawerItem(
-            label = { Text("Patients",
-                fontWeight = FontWeight.Bold
-            ) },
-            icon = { Icon(Icons.Default.AirlineSeatFlatAngled, contentDescription = null) },
-            selected = false,
-            onClick = { onItemSelected("patientAttention") }
-        )
-        NavigationDrawerItem(
-            label = { Text("Inventory",
-                fontWeight = FontWeight.Bold
-            ) },
-            icon = { Icon(Icons.Default.Inventory, contentDescription = null) },
-            selected = false,
-            onClick = { onItemSelected("inventory") }
-        )
-        NavigationDrawerItem(
-            label = { Text("Payments",
-                fontWeight = FontWeight.Bold
-            ) },
-            icon = { Icon(Icons.Default.CreditCard, contentDescription = null) },
-            selected = false,
-            onClick = { onItemSelected("payments") }
-        )
-        NavigationDrawerItem(
-            label = { Text("Profile",
-                fontWeight = FontWeight.Bold) },
-            icon = { Icon(Icons.Default.AccountBalance, contentDescription = null) },
-            selected = false,
-            onClick = { onItemSelected("profile") }
-        )
-        NavigationDrawerItem(
-            label = { Text("Dashboard",
-                fontWeight = FontWeight.Bold
-            ) },
-            icon = { Icon(Icons.Default.Dashboard, contentDescription = null) },
-            selected = false,
-            onClick = { onItemSelected("home") }
-        )
+
+        items.forEach { (label, icon, route) ->
+            NavigationDrawerItem(
+                label = {
+                    Text(label, fontWeight = FontWeight.Medium)
+                },
+                icon = {
+                    Icon(icon, contentDescription = label, tint = Color(0xFF2C3E50))
+                },
+                selected = false,
+                onClick = { onItemSelected(route) },
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        }
     }
 }
+

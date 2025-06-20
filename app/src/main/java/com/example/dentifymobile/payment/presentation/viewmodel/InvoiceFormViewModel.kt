@@ -19,7 +19,12 @@ class InvoiceFormViewModel (
 
     fun addInvoice(invoice: AddInvoiceRequest){
         viewModelScope.launch {
-            addInvoiceUseCase(invoice)
+            try {
+                addInvoiceUseCase(invoice)
+                println("Factura enviada correctamente.")
+            } catch (e: Exception) {
+                println("Error al enviar la factura: ${e.message}")
+            }
         }
     }
     fun loadAppointments(){

@@ -64,10 +64,17 @@ fun NavGraphBuilder.patientAttentionNavGraph(navController: NavController, conte
         }
 
         composable("medical_history_form") {
+            val patient = medicalHistoryFormViewModel.selectedPatient.value
+
             MedicalHistoryFormView(
                 medicalHistoryFormViewModel,
                 toMedicalHistories = {
-                    navController.navigate("medical_histories")
+                    navController.popBackStack()
+                },
+                onMedicalHistoriesSaved = {
+                    patient?.let {
+                        medicalHistoriesViewModel.getAllMedical(it.id)
+                    }
                 }
             )
         }

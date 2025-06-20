@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,9 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.dentifymobile.patientattention.patient.domain.model.MedicalHistory
 import com.example.dentifymobile.patientattention.patient.presentation.viewmodel.MedicalHistoryFormViewModel
 
@@ -40,7 +43,8 @@ import com.example.dentifymobile.patientattention.patient.presentation.viewmodel
 @Composable
 fun MedicalHistoryFormView(
     viewModel: MedicalHistoryFormViewModel,
-    toMedicalHistories: () -> Unit
+    toMedicalHistories: () -> Unit,
+    onMedicalHistoriesSaved: ()-> Unit
 ) {
 
     val description = remember { mutableStateOf("") }
@@ -48,6 +52,7 @@ fun MedicalHistoryFormView(
     val diagnosis = remember { mutableStateOf("") }
     val medication = remember { mutableStateOf("") }
     val errorMessage = remember { mutableStateOf("") }
+    val showSuccessDialog = remember { mutableStateOf(false) }
 
 
     Box(modifier = Modifier.fillMaxSize().padding(top = 20.dp)) {
@@ -146,7 +151,8 @@ fun MedicalHistoryFormView(
 
                     viewModel.selectedPatient.value?.let { viewModel.addMedicalHistory(it.id, medicalHistory) }
                     errorMessage.value = ""
-                    toMedicalHistories()
+                    showSuccessDialog.value = true
+                    onMedicalHistoriesSaved()
                 }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
@@ -161,6 +167,40 @@ fun MedicalHistoryFormView(
             )
         }
 
+    }
+    if (showSuccessDialog.value) {
+        Dialog(onDismissRequest = { showSuccessDialog.value = false }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+                    .background(Color.White, shape = RoundedCornerShape(16.dp))
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Medical History registered successfully!",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color(0xFF2C3E50),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            showSuccessDialog.value = false
+                            toMedicalHistories()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("OK", color = Color.White)
+                    }
+                }
+            }
+        }
     }
 }
 

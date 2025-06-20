@@ -9,4 +9,5 @@ interface AppointmentRepository {
     suspend fun deleteAppointment(id: Long)
     suspend fun addAppointment(addAppointmentRequest: AddAppointmentRequest)
     suspend fun updateAppointment(id: Long, appointment: UpdateAppointmentRequest)
+    suspend fun getAppointmentById(id: Long): Appointment?
 }

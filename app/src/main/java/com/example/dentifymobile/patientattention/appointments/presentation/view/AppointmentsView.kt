@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,12 +40,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.dentifymobile.patientattention.appointments.domain.model.Appointment
+import com.example.dentifymobile.patientattention.appointments.presentation.dto.AppointmentUIModel
 import com.example.dentifymobile.patientattention.appointments.presentation.viewmodel.AppointmentViewModel
 
+
+
 @Composable
-fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -> Unit, toUpdateAppointmentForm: (Long)-> Unit){
+fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: (onReturn: () -> Unit) -> Unit, toUpdateAppointmentForm: (Long)-> Unit){
     val appointments = viewModel.appointments.collectAsState()
-    val expanded = remember { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         viewModel.getAllAppointments()
@@ -65,7 +69,9 @@ fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -
         }
 
         Button(
-            onClick = { toAddAppointmentForm() },
+            onClick = { toAddAppointmentForm{
+                viewModel.getAllAppointments()
+            } },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -83,70 +89,59 @@ fun AppointmentsView(viewModel: AppointmentViewModel, toAddAppointmentForm: () -
 }
 
 @Composable
-fun AppointmentItemView(appointment: Appointment, onDelete: (Long)-> Unit, onEdit: (Appointment)-> Unit){
+fun AppointmentItemView(appointment: AppointmentUIModel, onDelete: (Long)-> Unit, onEdit: (AppointmentUIModel)-> Unit){
     val showDialog = remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFD1F2EB)),
-        shape = CardDefaults.shape
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(20.dp)
     ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFF2C3E50))
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Start
-            ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.ContentPaste,
                     contentDescription = "Appointment",
-                    tint = Color.White
+                    tint = Color(0xFF2C3E50),
+                    modifier = Modifier
+                        .background(Color(0xFFD1F2EB), shape = RoundedCornerShape(12.dp))
+                        .padding(8.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = appointment.patientName,
-                    color = Color.White
-                )
+                Column {
+                    Text(text = appointment.patientName, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(text = "DNI: ${appointment.dni}", fontSize = 14.sp, color = Color.Gray)
+                }
             }
 
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "ID: ${appointment.id}")
-                Text(text = "DNI: ${appointment.dni}")
-                Text(text = "Date: ${appointment.appointmentDate}")
-                Text(text = "Reason: ${appointment.reason}")
-                Text(text = "Completed: ${appointment.completed}")
-                Text(text = "Duration: ${appointment.duration}")
-                Text(text = "Created At: ${appointment.createdAt}")
+            Spacer(modifier = Modifier.height(12.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Column(modifier = Modifier.padding(start = 8.dp)) {
+                InfoRow(label = "Date:", value = appointment.appointmentDate)
+                InfoRow(label = "Hour:", value = appointment.appointmentHour)
+                Spacer(modifier = Modifier.height(8.dp))
+                InfoRow(label = "Reason:", value = appointment.reason)
+                InfoRow(label = "Completed:", value = appointment.completed.toString())
+                InfoRow(label = "Duration:", value = "${appointment.durationFormatted} hrs")
+                InfoRow(label = "Created:", value = appointment.createdAt)
+            }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
 
-                    Text(
-                        text = "Edit",
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            onEdit(appointment)
-                        }
-                    )
-                    Text(
-                        text = "Delete",
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            showDialog.value = true
-                        }
-                    )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                OutlinedButton(onClick = { onEdit(appointment) }) {
+                    Text("Edit")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                OutlinedButton(onClick = { showDialog.value = true }) {
+                    Text("Delete")
                 }
             }
         }
@@ -203,5 +198,13 @@ fun AppointmentItemView(appointment: Appointment, onDelete: (Long)-> Unit, onEdi
             }
         }
     }
+}
 
+@Composable
+fun InfoRow(label: String, value: String) {
+    Row(modifier = Modifier.padding(vertical = 2.dp)) {
+        Text(text = label, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(text = value)
+    }
 }

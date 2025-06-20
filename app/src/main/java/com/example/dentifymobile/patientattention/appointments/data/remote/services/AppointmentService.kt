@@ -14,6 +14,8 @@ import retrofit2.http.Path
 interface AppointmentService {
     @GET("v1/appointments")
     suspend fun getAllAppointments(): Response<List<AppointmentResponse>>
+    @GET("v1/appointments/appointment/{id}")
+    suspend fun getAppointmentById(@Path("id") id: Long): Response<AppointmentResponse>
     @DELETE("v1/appointments/{id}")
     suspend fun deleteAppointment(@Path("id") id: Long): Response<Unit>
     @POST("v1/appointments")

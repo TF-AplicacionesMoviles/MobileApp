@@ -33,6 +33,9 @@ fun NavGraphBuilder.invoiceNavGraph(navController: NavController, context: Conte
                 },
                 toBack = {
                     navController.popBackStack()
+                },
+                onInvoicesSaved = {
+                    invoicesViewModel.getAllInvoices()
                 }
             )
         }

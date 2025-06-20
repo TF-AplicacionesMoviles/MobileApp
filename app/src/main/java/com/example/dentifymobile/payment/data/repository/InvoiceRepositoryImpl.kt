@@ -25,12 +25,17 @@ class InvoiceRepositoryImpl(private val invoiceService: InvoiceService): Invoice
     }
 
     override suspend fun addInvoice(addInvoiceRequest: AddInvoiceRequest) = withContext(Dispatchers.IO) {
-        val response = invoiceService.addInvoice(
-            addInvoiceRequest
-        )
 
-        if (!response.isSuccessful){
-            Log.e("InvoiceRepositoryImpl", "Error  adding invoice: ${response.code()} - ${response.message()}")
+        Log.d("InvoiceRepositoryImpl", "Request body: $addInvoiceRequest")
+
+        val response = invoiceService.addInvoice(addInvoiceRequest)
+
+        if (!response.isSuccessful) {
+            val errorBody = response.errorBody()?.string() ?: "No error body"
+            Log.e(
+                "InvoiceRepositoryImpl",
+                "Error adding invoice: ${response.code()} - ${response.message()} | Error body: $errorBody"
+            )
         }
     }
 }

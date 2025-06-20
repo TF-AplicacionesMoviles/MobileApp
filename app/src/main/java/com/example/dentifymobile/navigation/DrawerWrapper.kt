@@ -1,5 +1,6 @@
 package com.example.dentifymobile.navigation
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -40,13 +41,16 @@ import androidx.navigation.NavController
 import com.example.dentifymobile.R
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.ui.platform.LocalContext
+import com.example.dentifymobile.iam.data.storage.TokenStorage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
+    val context = LocalContext.current
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -54,7 +58,13 @@ fun DrawerWrapper(navController: NavController, content: @Composable () -> Unit)
                 onItemSelected = { route ->
                     scope.launch {
                         drawerState.close()
-                        navController.navigate(route)
+                        if (route == "logout") {
+
+                            // Aquí haces la limpieza
+                            logoutUser(context, navController)
+                        } else {
+                            navController.navigate(route)
+                        }
                     }
                 }
             )
@@ -145,7 +155,8 @@ fun DrawerContent(
             Triple("Patients", Icons.Default.AirlineSeatFlatAngled, "patientAttention"),
             Triple("Inventory", Icons.Default.Inventory, "inventory"),
             Triple("Payments", Icons.Default.CreditCard, "payments"),
-            Triple("Profile", Icons.Default.AccountBalance, "profile")
+            Triple("Profile", Icons.Default.AccountBalance, "profile"),
+            Triple("Logout", Icons.Default.Logout, "logout")
         )
 
         items.forEach { (label, icon, route) ->
@@ -161,5 +172,14 @@ fun DrawerContent(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
+    }
+}
+
+fun logoutUser(context: Context, navController: NavController) {
+
+    TokenStorage.clearTokens(context)
+    // Limpiar backstack y navegar al login
+    navController.navigate("authentication/login") {
+        popUpTo("app") { inclusive = true }
     }
 }

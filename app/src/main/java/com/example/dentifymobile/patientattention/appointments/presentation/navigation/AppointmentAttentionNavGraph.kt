@@ -45,24 +45,20 @@ fun NavGraphBuilder.appointmentNavGraph(navController: NavController, context: C
         composable("update_appointment/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toLongOrNull()
             if (id != null) {
-                val appointment = appointmentsViewModel.getAppointmentById(id)
-                if (appointment != null) {
-                    UpdateAppointmentFormView(
-                        appointmentFormViewModel,
-                        appointment = appointment,
-                        toAppointments = {
-                            navController.navigate("appointments") {
-                                popUpTo("appointments") { inclusive = true }
-                            }
-                        },
-                        toBack = { navController.popBackStack() }
+                UpdateAppointmentFormView(
+                    appointmentFormViewModel,
+                    appointmentId = id,
+                    toAppointments = {
+                        navController.navigate("appointments") {
+                            popUpTo("appointments") { inclusive = true }
+                        } },
+                    toBack = { navController.popBackStack() }
                     )
-                } else {
-                    Text("Appointment not found")
-                }
+            } else {
+                Text("Appointment not found")
             }
+
         }
-
-
     }
 }
+

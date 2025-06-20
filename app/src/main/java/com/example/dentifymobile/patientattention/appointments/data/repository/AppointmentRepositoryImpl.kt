@@ -60,4 +60,15 @@ class AppointmentRepositoryImpl (
             Log.e("AppointmentRepositoryImpl", "Error updating appointment: ${response.code()} - ${response.message()}")
         }
     }
+
+    override suspend fun getAppointmentById(id: Long): Appointment? = withContext(Dispatchers.IO){
+        val response = appointmentService.getAppointmentById(id)
+
+        if (response.isSuccessful) {
+            return@withContext response.body()?.toDomain()
+        } else {
+            Log.e("AppointmentRepositoryImpl", "Error fetching appointment: ${response.code()} ${response.message()}")
+            return@withContext null
+        }
+    }
 }

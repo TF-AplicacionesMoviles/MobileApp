@@ -9,6 +9,7 @@ import com.example.dentifymobile.patientattention.appointments.domain.repository
 import com.example.dentifymobile.patientattention.appointments.domain.usecases.AddAppointmentUseCase
 import com.example.dentifymobile.patientattention.appointments.domain.usecases.DeleteAppointmentUseCase
 import com.example.dentifymobile.patientattention.appointments.domain.usecases.GetAllAppointmentsUseCase
+import com.example.dentifymobile.patientattention.appointments.domain.usecases.GetAppointmentByIdUseCase
 import com.example.dentifymobile.patientattention.appointments.domain.usecases.UpdateAppointmentUseCase
 import com.example.dentifymobile.patientattention.patient.data.di.DataModule.getPatientRepository
 import com.example.dentifymobile.patientattention.patient.domain.usecases.GetAllPatientFormInfoUseCase
@@ -58,5 +59,8 @@ object DataModule {
     }
     fun getAllPatientFormInfoUseCase(context: Context): GetAllPatientFormInfoUseCase {
         return GetAllPatientFormInfoUseCase(getPatientRepository(context))
+    }
+    fun getAppointmentByIdUseCase(context: Context): GetAppointmentByIdUseCase{
+        return GetAppointmentByIdUseCase(getAppointmentRepository(context))
     }
 }

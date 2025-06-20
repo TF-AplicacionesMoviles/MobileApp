@@ -12,7 +12,8 @@ object PresentationModule {
     fun getAppointmentFormViewModel(context: Context): AppointmentFormViewModel {
         return AppointmentFormViewModel(DataModule.addAppointmentUseCase(context),
             DataModule.updateAppointmentUseCase(context),
-            DataModule.getAllPatientFormInfoUseCase(context)
+            DataModule.getAllPatientFormInfoUseCase(context),
+            DataModule.getAppointmentByIdUseCase(context)
         )
     }
 }

@@ -14,6 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,21 +31,29 @@ import com.example.dentifymobile.patientattention.appointments.presentation.view
 @Composable
 fun UpdateAppointmentFormView(
     viewModel: AppointmentFormViewModel,
-    appointment: Appointment,
+    appointmentId: Long,
     toAppointments: () -> Unit,
     toBack: () -> Unit
 ) {
+
+    val appointmentState = viewModel.currentAppointment.collectAsState()
+    val appointment = appointmentState.value
+
+
+    LaunchedEffect(appointmentId) {
+        viewModel.loadAppointmentById(appointmentId)
+    }
+
+    if (appointment == null) {
+        Text("Loading appointment...")
+        return
+    }
+
     val reason = remember { mutableStateOf(TextFieldValue(appointment.reason ?: "")) }
     val selectedDate = remember { mutableStateOf(appointment.appointmentDate ?: "") }
     val selectedTime = remember {
-        mutableStateOf(
-            appointment.duration?.let {
-
-                if (it.length >= 5) it.substring(0, 5) else it
-            } ?: ""
-        )
+        mutableStateOf(appointment.durationFormatted?.take(5) ?: "") // Solo HH:MM
     }
-
 
     Column(
         modifier = Modifier

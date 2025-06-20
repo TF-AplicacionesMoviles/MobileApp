@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.dentifymobile.patientattention.appointments.domain.model.Appointment
 import com.example.dentifymobile.patientattention.appointments.domain.usecases.DeleteAppointmentUseCase
 import com.example.dentifymobile.patientattention.appointments.domain.usecases.GetAllAppointmentsUseCase
+import com.example.dentifymobile.patientattention.appointments.presentation.dto.AppointmentUIModel
+import com.example.dentifymobile.patientattention.appointments.presentation.mapper.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,12 +16,13 @@ class AppointmentViewModel(
     private val getAllAppointmentsUseCase: GetAllAppointmentsUseCase,
     private val deleteAppointmentUseCase: DeleteAppointmentUseCase
 ): ViewModel() {
-    private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
-    val appointments: StateFlow<List<Appointment>> = _appointments
+    private val _appointments = MutableStateFlow<List<AppointmentUIModel>>(emptyList())
+    val appointments: StateFlow<List<AppointmentUIModel>> = _appointments
 
     fun getAllAppointments(){
         viewModelScope.launch {
-            _appointments.value = getAllAppointmentsUseCase()
+            val domainAppointments = getAllAppointmentsUseCase()
+            _appointments.value = domainAppointments.map {it.toUiModel()}
         }
     }
 
@@ -36,7 +39,7 @@ class AppointmentViewModel(
 
     }
 
-    fun getAppointmentById(id: Long): Appointment? {
+    fun getAppointmentById(id: Long): AppointmentUIModel? {
         return appointments.value.find { it.id == id }
     }
 

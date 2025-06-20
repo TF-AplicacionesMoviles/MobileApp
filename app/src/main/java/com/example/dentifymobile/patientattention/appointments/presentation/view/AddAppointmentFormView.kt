@@ -41,9 +41,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.dentifymobile.patientattention.appointments.data.remote.dto.AddAppointmentRequest
 import com.example.dentifymobile.patientattention.appointments.domain.model.PatientDataForm
 import com.example.dentifymobile.patientattention.appointments.presentation.viewmodel.AppointmentFormViewModel
@@ -59,6 +61,9 @@ fun AddAppointmentFormView(viewModel: AppointmentFormViewModel, toAppointments: 
     val reason = remember { mutableStateOf("") }
     val duration = remember { mutableStateOf("") }
     val patientId = remember { mutableLongStateOf(0) }
+
+    val showSuccessDialog = remember { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         viewModel.loadPatients()
@@ -130,8 +135,9 @@ fun AddAppointmentFormView(viewModel: AppointmentFormViewModel, toAppointments: 
                                     patientId = patientId.longValue
                                 )
                                 viewModel.addAppointment(appointment)
+                                showSuccessDialog.value = true
                                 onAppointmentSaved()
-                                toAppointments()
+
                             },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
@@ -156,28 +162,43 @@ fun AddAppointmentFormView(viewModel: AppointmentFormViewModel, toAppointments: 
             }
         }
 
-        Button(
-            onClick = {
-                val appointment = AddAppointmentRequest(
-                    appointmentDate = appointmentDate.value,
-                    reason = reason.value,
-                    duration = duration.value,
-                    patientId = patientId.longValue
-                )
-                viewModel.addAppointment(appointment)
-                toAppointments() },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.align(Alignment.BottomCenter)
-                .padding(8.dp),) {
-            Text(
-                text = "Save",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+    }
+
+    if (showSuccessDialog.value) {
+        Dialog(onDismissRequest = { showSuccessDialog.value = false }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+                    .background(Color.White, shape = RoundedCornerShape(16.dp))
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Appointment registered successfully!",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color(0xFF2C3E50),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            showSuccessDialog.value = false
+                            toAppointments()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("OK", color = Color.White)
+                    }
+                }
+            }
         }
     }
+
 }
 
 @Composable
@@ -356,3 +377,5 @@ fun PatientDropdown(
         }
     }
 }
+
+

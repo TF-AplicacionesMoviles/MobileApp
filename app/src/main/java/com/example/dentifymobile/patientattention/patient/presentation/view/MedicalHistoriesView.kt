@@ -76,7 +76,7 @@ fun MedicalHistoriesView(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 8.dp, end = 8.dp),
+                        .padding(start = 8.dp, end = 8.dp, top = 100.dp),
                     colors = CardDefaults.cardColors(containerColor = rowBackgroundColor),
                     shape = RoundedCornerShape(16.dp)
                 ) {

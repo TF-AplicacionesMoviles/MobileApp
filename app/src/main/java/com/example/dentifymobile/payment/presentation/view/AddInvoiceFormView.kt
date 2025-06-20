@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,9 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.dentifymobile.patientattention.appointments.data.remote.dto.AddAppointmentRequest
 import com.example.dentifymobile.patientattention.appointments.domain.model.PatientDataForm
 import com.example.dentifymobile.payment.data.remote.dto.AddInvoiceRequest
@@ -45,10 +48,11 @@ import com.example.dentifymobile.payment.presentation.viewmodel.InvoiceFormViewM
 import kotlin.collections.forEach
 
 @Composable
-fun AddInvoiceFormView(viewModel: InvoiceFormViewModel, toInvoices: ()-> Unit, toBack: ()-> Unit){
+fun AddInvoiceFormView(viewModel: InvoiceFormViewModel, toInvoices: ()-> Unit, toBack: ()-> Unit, onInvoicesSaved: ()-> Unit){
     val amount = remember { mutableLongStateOf(0) }
     val appointmentId = remember { mutableLongStateOf(0) }
     val paymentMethodId = remember { mutableLongStateOf(0) }
+    val showSuccessDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadAppointments()
@@ -166,12 +170,13 @@ fun AddInvoiceFormView(viewModel: InvoiceFormViewModel, toInvoices: ()-> Unit, t
         Button(
             onClick = {
                 val invoice = AddInvoiceRequest(
-                    amount = amount.value,
-                    appointmentId = appointmentId.value,
-                    paymentMethodId = paymentMethodId.value,
+                    amount = amount.longValue,
+                    appointmentId = appointmentId.longValue,
+                    paymentMethodId = paymentMethodId.longValue,
                 )
                 viewModel.addInvoice(invoice)
-                toInvoices() },
+                showSuccessDialog.value = true
+                onInvoicesSaved() },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -182,6 +187,41 @@ fun AddInvoiceFormView(viewModel: InvoiceFormViewModel, toInvoices: ()-> Unit, t
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
+        }
+    }
+
+    if (showSuccessDialog.value) {
+        Dialog(onDismissRequest = { showSuccessDialog.value = false }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+                    .background(Color.White, shape = RoundedCornerShape(16.dp))
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Invoice registered successfully!",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color(0xFF2C3E50),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            showSuccessDialog.value = false
+                            toInvoices()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("OK", color = Color.White)
+                    }
+                }
+            }
         }
     }
 

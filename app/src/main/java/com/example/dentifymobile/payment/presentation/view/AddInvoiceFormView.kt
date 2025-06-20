@@ -174,6 +174,7 @@ fun AddInvoiceFormView(viewModel: InvoiceFormViewModel, toInvoices: ()-> Unit, t
                     appointmentId = appointmentId.longValue,
                     paymentMethodId = paymentMethodId.longValue,
                 )
+
                 viewModel.addInvoice(invoice)
                 showSuccessDialog.value = true
                 onInvoicesSaved() },

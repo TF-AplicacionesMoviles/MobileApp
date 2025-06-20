@@ -12,12 +12,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -26,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.dentifymobile.patientattention.appointments.data.remote.dto.UpdateAppointmentRequest
 import com.example.dentifymobile.patientattention.appointments.domain.model.Appointment
 import com.example.dentifymobile.patientattention.appointments.presentation.viewmodel.AppointmentFormViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -39,9 +44,22 @@ fun UpdateAppointmentFormView(
     val appointmentState = viewModel.currentAppointment.collectAsState()
     val appointment = appointmentState.value
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val updateSuccess = viewModel.updateSuccess.collectAsState()
 
     LaunchedEffect(appointmentId) {
         viewModel.loadAppointmentById(appointmentId)
+    }
+
+    LaunchedEffect(updateSuccess.value) {
+        if (updateSuccess.value) {
+            scope.launch {
+                snackbarHostState.showSnackbar("Appointment updated successfully!")
+                viewModel.updateSuccess.value = false // reset después del snackbar
+                toAppointments() // redirige cuando el snackbar termina
+            }
+        }
     }
 
     if (appointment == null) {
@@ -55,62 +73,67 @@ fun UpdateAppointmentFormView(
         mutableStateOf(appointment.durationFormatted?.take(5) ?: "") // Solo HH:MM
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text("Update Appointment", style = MaterialTheme.typography.titleLarge)
-
-        OutlinedTextField(
-            value = reason.value,
-            onValueChange = { reason.value = it },
-            label = { Text("Reason") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        AppointmentDatePickerTextField(
-            label = "Date",
-            selectedDate = selectedDate.value,
-            onDateTimeSelected = { newDate ->
-                selectedDate.value = newDate
-            }
-        )
-
-        TimeTextField(
-            label = "Duration",
-            value = selectedTime.value,
-            onTimeSelected = { time ->
-                selectedTime.value = time
-            }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Button(
-                onClick = { toBack() },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-            ) {
-                Text("Cancel")
-            }
+            Text("Update Appointment", style = MaterialTheme.typography.titleLarge)
 
-            Button(
-                onClick = {
-                    val updateRequest = UpdateAppointmentRequest(
-                        appointmentDate = selectedDate.value,
-                        reason = reason.value.text,
-                        duration = selectedTime.value
-                    )
-                    viewModel.updateAppointment(appointment.id, updateRequest)
-                    toAppointments()
+            OutlinedTextField(
+                value = reason.value,
+                onValueChange = { reason.value = it },
+                label = { Text("Reason") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            AppointmentDatePickerTextField(
+                label = "Date",
+                selectedDate = selectedDate.value,
+                onDateTimeSelected = { newDate ->
+                    selectedDate.value = newDate
                 }
+            )
+
+            TimeTextField(
+                label = "Duration",
+                value = selectedTime.value,
+                onTimeSelected = { time ->
+                    selectedTime.value = time
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text("Save")
+                Button(
+                    onClick = { toBack() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text("Cancel")
+                }
+
+                Button(
+                    onClick = {
+                        val updateRequest = UpdateAppointmentRequest(
+                            appointmentDate = selectedDate.value,
+                            reason = reason.value.text,
+                            duration = selectedTime.value
+                        )
+                        viewModel.updateAppointment(appointment.id, updateRequest)
+
+                    }
+                ) {
+                    Text("Save")
+                }
             }
         }
     }

@@ -6,17 +6,20 @@ import android.app.TimePickerDialog
 import android.widget.TimePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -61,65 +64,92 @@ fun AddAppointmentFormView(viewModel: AppointmentFormViewModel, toAppointments: 
         viewModel.loadPatients()
     }
 
-    Box(modifier = Modifier.fillMaxSize().padding(top = 20.dp)) {
+    Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         LazyColumn(
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, bottom = 72.dp)
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Card (modifier = Modifier.padding(start = 8.dp, end = 8.dp)
-                    .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFD1F2EB))
+                Card (
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F8F5))
                 ){
-                    Column {
-                        Row (
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color(0xFF2C3E50))
-                                .padding(16.dp)
-                        ){
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Default.Description,
+                                imageVector = Icons.Default.ContentPaste,
                                 contentDescription = "Appointment",
-                                tint = Color.White
+                                tint = Color(0xFF2C3E50),
+                                modifier = Modifier
+                                    .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(12.dp))
+                                    .padding(8.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Add a new appointment",
-                                color = Color.White,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
+                            Column {
+                                Text(text = "Add appointment", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                            }
                         }
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            AppointmentDatePickerTextField(label = "Appointment Date", selectedDate = appointmentDate.value) { appointmentDate.value = it }
-                            AppointmentTextField(label = "Reason", value = reason.value,
-                                onValueChange = { it?.let { reason.value = it } },
-                                convertToString = { it },
-                                convertFromString = { it }
-                            )
-                            TimeTextField(label = "Duration", value = duration.value) { duration.value = it }
-                            PatientDropdown(
-                                label = "Select Patient",
-                                patients = viewModel.getPatients().value,
-                                selectedPatientId = patientId.longValue,
-                                onPatientSelected = { patientId.longValue = it }
-                            )
+                        Spacer(modifier = Modifier.height(16.dp))
 
+                        AppointmentDatePickerTextField(
+                            label = "Appointment Date",
+                            selectedDate = appointmentDate.value,
+                            onDateTimeSelected = { appointmentDate.value = it }
+                        )
+
+                        AppointmentTextField(
+                            label = "Reason",
+                            value = reason.value,
+                            onValueChange = { it?.let { reason.value = it } },
+                            convertToString = { it },
+                            convertFromString = { it }
+                        )
+
+                        TimeTextField(
+                            label = "Duration",
+                            value = duration.value,
+                            onTimeSelected = { duration.value = it }
+                        )
+
+                        PatientDropdown(
+                            label = "Patient",
+                            patients = viewModel.getPatients().value,
+                            selectedPatientId = patientId.longValue,
+                            onPatientSelected = { patientId.longValue = it }
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = {
+                                val appointment = AddAppointmentRequest(
+                                    appointmentDate = appointmentDate.value,
+                                    reason = reason.value,
+                                    duration = duration.value,
+                                    patientId = patientId.longValue
+                                )
+                                viewModel.addAppointment(appointment)
+                                toAppointments()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text("Save Appointment", fontWeight = FontWeight.Bold, color = Color.White)
                         }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Back to Appointments",
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.clickable { toBack() }.padding(top = 8.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline
+                        )
 
                     }
-                    Text(
-                        text = "Go back to appointment general view",
-                        color = Color(0xFF2C3E50),
-                        modifier = Modifier
-                            .clickable { toBack() }
-                            .padding(start = 16.dp, bottom = 16.dp),
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline
-                    )
 
                 }
             }

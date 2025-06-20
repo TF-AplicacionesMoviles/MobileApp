@@ -29,7 +29,7 @@ class AppointmentFormViewModel (
 
 ): ViewModel() {
 
-
+    val updateSuccess = MutableStateFlow(false)
     private val _currentAppointment = MutableStateFlow<AppointmentUIModel?>(null)
     val currentAppointment: StateFlow<AppointmentUIModel?> = _currentAppointment
 
@@ -57,7 +57,12 @@ class AppointmentFormViewModel (
 
     fun updateAppointment(id: Long, appointment: UpdateAppointmentRequest){
         viewModelScope.launch {
-            updateAppointmentUseCase(id, appointment)
+            try {
+                updateAppointmentUseCase(id, appointment)
+                updateSuccess.value = true
+            } catch (e: Exception) {
+                Log.e("AppointmentVM", "Error updating", e)
+            }
         }
     }
 

@@ -154,19 +154,19 @@ fun MedicalHistoryItemView(
 ) {
 
 //    fun formatIsoDateToReadable(isoString: String): String {
-//        val localDateTime = LocalDateTime.parse(isoString) // Usa parseo ISO por defecto
+//        val localDateTime = LocalDateTime.parse(isoString)
 //        val outputFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)
 //        return localDateTime.format(outputFormatter)
 //    }
 //
 //    fun getHourFromIso(isoString: String): String {
-//        val localDateTime = LocalDateTime.parse(isoString) // Usa parseo ISO por defecto
+//        val localDateTime = LocalDateTime.parse(isoString)
 //        return localDateTime.format(DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH))
 //    }
 
 
     fun formatIsoDateToReadable(isoString: String): String {
-        val localDateTime = LocalDateTime.parse(isoString) // No uses patrón personalizado
+        val localDateTime = LocalDateTime.parse(isoString)
         val zoned = localDateTime.atZone(ZoneId.of("America/Lima"))
         val outputFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)
         return zoned.format(outputFormatter)

@@ -40,6 +40,9 @@ import java.util.Locale
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.style.TextDecoration
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
+import android.util.Log
+
 
 
 @Composable
@@ -151,31 +154,32 @@ fun MedicalHistoryItemView(
 ) {
 
 //    fun formatIsoDateToReadable(isoString: String): String {
-//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-//        val localDateTime = LocalDateTime.parse(isoString, formatter)
-//
+//        val localDateTime = LocalDateTime.parse(isoString) // Usa parseo ISO por defecto
 //        val outputFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)
 //        return localDateTime.format(outputFormatter)
 //    }
 //
 //    fun getHourFromIso(isoString: String): String {
-//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-//        val localDateTime = LocalDateTime.parse(isoString, formatter)
-//
+//        val localDateTime = LocalDateTime.parse(isoString) // Usa parseo ISO por defecto
 //        return localDateTime.format(DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH))
 //    }
 
 
     fun formatIsoDateToReadable(isoString: String): String {
-        val localDateTime = LocalDateTime.parse(isoString) // Usa parseo ISO por defecto
+        val localDateTime = LocalDateTime.parse(isoString) // No uses patrón personalizado
+        val zoned = localDateTime.atZone(ZoneId.of("America/Lima"))
         val outputFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH)
-        return localDateTime.format(outputFormatter)
+        return zoned.format(outputFormatter)
     }
 
     fun getHourFromIso(isoString: String): String {
-        val localDateTime = LocalDateTime.parse(isoString) // Usa parseo ISO por defecto
-        return localDateTime.format(DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH))
+        val localDateTime = LocalDateTime.parse(isoString)
+        val zoned = localDateTime.atZone(ZoneId.of("America/Lima"))
+        return zoned.format(DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH))
     }
+
+//    Log.d("MedicalDate", "Date from backend: ${medicalHistory.date}")
+
 
     Card(
         modifier = Modifier

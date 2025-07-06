@@ -193,7 +193,7 @@ fun PatientItemView(
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
-                        Text(text = "DNI: ${patient.dni}", fontSize = 14.sp, color = Color.Gray)
+                        Text(text = "ID: ${patient.dni}", fontSize = 14.sp, color = Color.Gray)
                     }
                 }
 

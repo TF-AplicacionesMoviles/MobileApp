@@ -1,7 +1,6 @@
 package com.example.dentifymobile.patientattention.patient.presentation.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,23 +24,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.dentifymobile.patientattention.patient.domain.model.Patient
@@ -58,8 +56,6 @@ fun PatientsView(
     val patients = viewModel.patients.collectAsState()
 
     val searchedPatient = remember { mutableStateOf("") }
-
-//    val expanded = remember { mutableStateOf(false) }
 
     val filteredPatients = patients.value.filter {
         val query = searchedPatient.value.trim().lowercase()
@@ -98,38 +94,12 @@ fun PatientsView(
                         )
                     }
                 },
-//                trailingIcon = {
-//                    Box {
-//                        IconButton(onClick = { expanded.value = true }) {
-//                            Icon(
-//                                imageVector = Icons.Default.Tune,
-//                                contentDescription = "Filter"
-//                            )
-//                        }
-//
-//                        DropdownMenu(
-//                            expanded = expanded.value,
-//                            onDismissRequest = { expanded.value = false }
-//                        ) {
-//                            DropdownMenuItem(
-//                                text = { Text(
-//                                    text = "Filter by DNI",
-//                                    modifier = Modifier.fillMaxWidth(),
-//                                    textAlign = TextAlign.Center) },
-//                                onClick = {
-//                                    expanded.value = false
-//                                    //lógica de filtro por DNI
-//                                    println("Filter by DNI")
-//                                }
-//                            )
-//                        }
-//                    }
 
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFFD1F2EB),
-                    unfocusedContainerColor = Color(0xFFD1F2EB),
-                    focusedBorderColor = Color(0xFFD1F2EB)
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedBorderColor = Color(0xFF2C3E50)
                 )
             )
 
@@ -155,10 +125,11 @@ fun PatientsView(
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)
-            .padding(8.dp),
+            .padding(8.dp)
+            .fillMaxWidth(0.9f),
         ) {
             Text(
-                text = "New Patient (+)",
+                text = "New Patient",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
@@ -181,70 +152,77 @@ fun PatientItemView(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFD1F2EB)),
-        shape = CardDefaults.shape
+            .padding(horizontal = 4.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(20.dp)
     ) {
-        Column {
+        Box(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFF2C3E50))
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Start
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp),
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Patient",
-                    tint = Color.White
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "${patient.firstName} ${patient.lastName}",
-                    color = Color.White
-                )
+                IconButton(onClick = {
+                    toPatientForm(patient)
+                }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Black)
+                }
+                IconButton(onClick = {
+                    showDialog.value = true
+                }) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Black)
+                }
             }
 
+
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "ID: ${patient.dni}")
-                Text(text = "Email: ${patient.email}")
-                Text(text = "Age: ${patient.age}")
-                Text(text = "Birthday: ${patient.birthday}")
-                Text(text = "Home address: ${patient.homeAddress}")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Patient",
+                        tint = Color(0xFF2C3E50),
+                        modifier = Modifier
+                            .background(Color(0xFFD1F2EB), shape = RoundedCornerShape(12.dp))
+                            .padding(8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            text = "${patient.firstName} ${patient.lastName}",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                        Text(text = "DNI: ${patient.dni}", fontSize = 14.sp, color = Color.Gray)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Column(modifier = Modifier.padding(start = 8.dp)) {
+                    InfoRow(label = "Email:", value = patient.email)
+                    InfoRow(label = "Birthday:", value = patient.birthday)
+                    InfoRow(label = "Age:", value = patient.age.toString())
+                    InfoRow(label = "Home Address:", value = patient.homeAddress)
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Text(
-                        text = "View history",
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            toMedicalHistories(patient)
-                        }
-                    )
-                    Text(
-                        text = "Edit",
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            toPatientForm(patient)
-                        }
-                    )
-                    Text(
-                        text = "Delete",
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            showDialog.value = true
-                        }
-                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    OutlinedButton(
+                        border = null,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFD1F2EB)),
+                        onClick = {
+                        toMedicalHistories(patient)
+                    }) {
+                        Text("View Medical History",
+                            color = Color.Black)
+                    }
                 }
             }
         }
@@ -302,5 +280,16 @@ fun PatientItemView(
                 }
             }
         }
+    }
+}
+
+
+
+@Composable
+fun InfoRow(label: String, value: String) {
+    Row(modifier = Modifier.padding(vertical = 2.dp)) {
+        Text(text = label, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(text = value)
     }
 }

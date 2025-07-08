@@ -42,10 +42,4 @@ class ItemsViewModel(
             }
         }
     }
-
-    fun toggleItemSelected(index: Int, isSelected: Boolean) {
-        _items.value = _items.value.mapIndexed { i, item ->
-            if (i == index) item.copy(isSelected = isSelected) else item
-        }
-    }
 }

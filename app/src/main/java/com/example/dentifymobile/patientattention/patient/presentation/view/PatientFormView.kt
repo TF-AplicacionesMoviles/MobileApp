@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +21,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -84,61 +84,50 @@ fun PatientFormView(viewModel: PatientFormViewModel,
             item {
                 Card(
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFD1F2EB))
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color(0xFF2C3E50))
-                                .padding(16.dp)
-                        ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Default.Person,
-                                contentDescription = "Persona",
-                                tint = Color.White
+                                contentDescription = "Patient",
+                                tint = Color(0xFF2C3E50),
+                                modifier = Modifier
+                                    .background(Color(0xFFD1F2EB), shape = RoundedCornerShape(12.dp))
+                                    .padding(8.dp)
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = if(selectedPatient != null) {
-                                    firstName.value + " " + lastName.value
-                                } else {
-                                    "Add a new patient"
-                                },
-                                color = Color.White,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text(text = if (selectedPatient != null) "Edit Patient" else "New Patient", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                            }
                         }
 
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                            PatientTextField(label = "ID", value = dni.value) { dni.value = it }
-                            PatientTextField(label = "First name", value = firstName.value) { firstName.value = it }
-                            PatientTextField(label = "Last name", value = lastName.value) { lastName.value = it }
-                            PatientTextField(label = "Email", value = email.value) { email.value = it }
-                            PatientTextField(label = "Home address", value = homeAddress.value) { homeAddress.value = it }
-                            DatePickerTextField(label = "Birthday", selectedDate = birthday.value) { birthday.value = it }
+                        ModernTextField("ID", dni.value) { dni.value = it }
+                        ModernTextField("First name", firstName.value) { firstName.value = it }
+                        ModernTextField("Last name", lastName.value) { lastName.value = it }
+                        ModernTextField("Email", email.value) { email.value = it }
+                        ModernTextField("Home address", homeAddress.value) { homeAddress.value = it }
+                        DatePickerTextField(label = "Birthday", selectedDate = birthday.value) { birthday.value = it }
 
-                            if (errorMessage.value != "") {
-                                Text(
-                                    text = errorMessage.value,
-                                    color = Color.Red,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 8.dp, top = 4.dp)
-                                )
-                            }
-
+                        if (errorMessage.value.isNotBlank()) {
+                            Text(
+                                text = errorMessage.value,
+                                color = Color.Red,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
                         }
                     }
+                }
 
-                    Text(
+                Text(
                         text = "Go back to patients general view",
                         color = Color(0xFF2C3E50),
                         modifier = Modifier
@@ -149,7 +138,7 @@ fun PatientFormView(viewModel: PatientFormViewModel,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline
                     )
-                }
+
             }
         }
 
@@ -193,7 +182,8 @@ fun PatientFormView(viewModel: PatientFormViewModel,
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)
-                .padding(8.dp),) {
+                .padding(8.dp)
+                .fillMaxWidth(0.9f)) {
             Text(
                 text = "Save",
                 color = Color.White,
@@ -203,36 +193,6 @@ fun PatientFormView(viewModel: PatientFormViewModel,
         }
     }
 }
-
-
-
-@Composable
-fun PatientTextField(label: String, value: String, onValueChange: (String) -> Unit) {
-    Column(modifier = Modifier.padding(vertical = 3.dp)) {
-        Text(text = label, fontWeight = FontWeight.Bold)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(12.dp))
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent
-                )
-            )
-        }
-    }
-}
-
-
-
-
 
 @Composable
 fun DatePickerTextField(
@@ -267,7 +227,8 @@ fun DatePickerTextField(
                 readOnly = true,
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(12.dp)),
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.DateRange,
@@ -277,9 +238,39 @@ fun DatePickerTextField(
                                 datePickerDialog.show()
                             },
                     )
-                }
+                },
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.3f),
+                    focusedIndicatorColor = Color(0xFF2C3E50)
+                )
             )
         }
     }
 
+}
+
+
+
+@Composable
+fun ModernTextField(label: String, value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        Text(text = label, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(12.dp)),
+            shape = RoundedCornerShape(12.dp),
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.3f),
+                focusedIndicatorColor = Color(0xFF2C3E50)
+            )
+        )
+    }
 }

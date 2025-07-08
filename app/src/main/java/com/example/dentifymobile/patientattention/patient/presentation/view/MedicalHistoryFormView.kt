@@ -21,9 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,39 +61,43 @@ fun MedicalHistoryFormView(
             item {
                 Card(
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFD1F2EB))
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
                     Column {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(Color(0xFF2C3E50))
+                                .background(Color.White)
                                 .padding(16.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ContentPaste,
                                 contentDescription = "Medical History",
-                                tint = Color.White
+                                tint = Color(0xFF2C3E50),
+                                modifier = Modifier
+                                    .background(Color(0xFFD1F2EB), shape = RoundedCornerShape(12.dp))
+                                    .padding(8.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "New medical history",
-                                color = Color.White,
+                                color = Color.Black,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
                         }
 
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
 
-                            MedicalHistoryTextField(label = "Description", value = description.value) { description.value = it }
-                            MedicalHistoryTextField(label = "Record", value = record.value) { record.value = it }
-                            MedicalHistoryTextField(label = "Diagnosis", value = diagnosis.value) { diagnosis.value = it }
-                            MedicalHistoryTextField(label = "Medication", value = medication.value) { medication.value = it }
+                            ModernTextField(label = "Description", value = description.value) { description.value = it }
+                            ModernTextField(label = "Record", value = record.value) { record.value = it }
+                            ModernTextField(label = "Diagnosis", value = diagnosis.value) { diagnosis.value = it }
+                            ModernTextField(label = "Medication", value = medication.value) { medication.value = it }
 
 
                             if (errorMessage.value != "") {
@@ -111,19 +113,19 @@ fun MedicalHistoryFormView(
 
                         }
                     }
-
-                    Text(
-                        text = "Go back to medical histories general view",
-                        color = Color(0xFF2C3E50),
-                        modifier = Modifier
-                            .clickable {
-                                toMedicalHistories()
-                            }
-                            .padding(start = 16.dp, bottom = 16.dp),
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline
-                    )
                 }
+
+                Text(
+                    text = "Go back to medical histories general view",
+                    color = Color(0xFF2C3E50),
+                    modifier = Modifier
+                        .clickable {
+                            toMedicalHistories()
+                        }
+                        .padding(start = 16.dp, bottom = 16.dp),
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline
+                )
             }
         }
 
@@ -158,7 +160,8 @@ fun MedicalHistoryFormView(
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.align(Alignment.BottomCenter)
-                .padding(8.dp),) {
+                .padding(8.dp)
+                .fillMaxWidth(0.9f)) {
             Text(
                 text = "Save",
                 color = Color.White,
@@ -205,26 +208,3 @@ fun MedicalHistoryFormView(
 }
 
 
-@Composable
-fun MedicalHistoryTextField(label: String, value: String, onValueChange: (String) -> Unit) {
-    Column(modifier = Modifier.padding(vertical = 3.dp)) {
-        Text(text = label, fontWeight = FontWeight.Bold)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(12.dp))
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent
-                )
-            )
-        }
-    }
-}

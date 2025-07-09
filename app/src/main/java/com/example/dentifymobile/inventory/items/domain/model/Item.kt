@@ -6,6 +6,5 @@ data class Item(
     val price: Double,
     val stockQuantity: Int,
     var isActive: Boolean,
-    val category: String,
-    var isSelected: Boolean = false
+    val category: String
 )
